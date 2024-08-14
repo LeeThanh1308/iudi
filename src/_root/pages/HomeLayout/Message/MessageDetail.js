@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-
+import io from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import { MdEmojiEmotions } from "react-icons/md";
 import { RiAttachment2, RiSendPlane2Fill } from "react-icons/ri";
 import { IoIosCloseCircle } from "react-icons/io";
-
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import {
   deleteMessage,
   fetchMessages,
+  handleUpdateDataMessage,
   messagesSelector,
   postMessage,
   postSeenMessage,
+  handleGetHistoryMessage,
+  fetchHistoryMessages,
 } from "../../../../service/redux/messages/messagesSlice";
 
 import MessageDetailItem from "./MessageDetailItem";
@@ -26,15 +29,20 @@ import { handleErrorImg } from "../../../../service/utils/utils";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import config from "../../../../configs/Configs.json";
-const { URL_BASE64 } = config;
+import { data } from "autoprefixer";
+const { URL_BASE64, API__SERVER } = config;
+const socket = io("https://api.iudi.xyz");
 
 const MessageDetail = () => {
   const { id } = useParams();
   const { userID } = new Auth();
 
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+  const [prevPage, setPrevPage] = useState(1);
+  const [onScrollBotton, setOnScrollBotton] = useState(true);
+  const [endHistory, setEndHistory] = useState(false);
   const { userName, isOnline, avatar } = location.state;
-
   const messRef = useRef();
   const [messageForm, setMessageForm] = useState("");
 
@@ -45,7 +53,34 @@ const MessageDetail = () => {
     dispatch(fetchMessages({ otherUserId: id, userID }));
   }, [id, postToggle]);
 
-  const handleSubmitForm = (e) => {
+  useEffect(() => {
+    // client connect to server
+    socket.emit("userId", { userId: userID });
+
+    socket.on("check_message", (message) => {
+      const { ReceiverID, SenderID, ...args } = message.data;
+      dispatch(fetchMessages({ otherUserId: SenderID, userID: ReceiverID }));
+      dispatch(fetchHistoryMessages(ReceiverID));
+      setTimeout(() => {
+        setOnScrollBotton((prev) => (prev = true));
+      }, 2000);
+      // console.table({ ReceiverID, SenderID, args });
+    });
+  }, [userID]);
+
+  useEffect(() => {
+    if (onScrollBotton) {
+      messRef.current.scrollTop = messRef.current.scrollHeight;
+      messRef.current.focus();
+      setOnScrollBotton((prev) => !prev);
+    }
+  }, [messages, onScrollBotton]);
+
+  useEffect(() => {
+    handleLoadHistoryMessage();
+  }, [prevPage]);
+
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
 
     if (messageForm.trim() !== "" || imageUrl !== null) {
@@ -57,7 +92,20 @@ const MessageDetail = () => {
         Image: imageUrl,
       };
 
-      dispatch(postMessage(data));
+      await dispatch(postMessage(data));
+      dispatch(fetchHistoryMessages(userID));
+      axios
+        .get(
+          `${API__SERVER}/pairmessage/${userID}?other_userId=${
+            data.idReceive
+          }&page=${1}&limit=${1}`
+        )
+        .then((response) => response.data)
+        .then((data) => dispatch(handleUpdateDataMessage(data.data[0])))
+        .then(() => {
+          setOnScrollBotton(true);
+        })
+        .catch(() => {});
       setMessageForm("");
       setImageUrl(null);
     }
@@ -89,6 +137,47 @@ const MessageDetail = () => {
   const handleClickEmoji = (data) => {
     setMessageForm((value) => value + data.emoji);
     setShowEmoji(false);
+  };
+
+  const handleScrollHistoryMgs = (e) => {
+    const scrollTop = e.target.scrollTop;
+    const containerHeight = e.target.scrollHeight - e.target.clientHeight;
+    const triggerHeight = containerHeight * 0.25;
+    console.table({
+      scrollTop,
+      containerHeight,
+      triggerHeight,
+      isLoading,
+      onScrollBotton,
+      isTrue: scrollTop <= triggerHeight,
+    });
+    if (scrollTop && scrollTop <= triggerHeight && !isLoading) {
+      setPrevPage((prevPage) => prevPage + 1); // Tăng trang khi cuộn lên 25%
+    }
+  };
+
+  const handleLoadHistoryMessage = async () => {
+    if (messages?.data?.length > 0) {
+      setIsLoading(true);
+      await axios
+        .get(
+          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${prevPage}&limit=30`
+        )
+        .then((response) => response.data)
+        .then((data) => {
+          const dataMessage = data?.data;
+          if (dataMessage) {
+            if (Array.isArray(dataMessage) && dataMessage.length === 0) {
+              setEndHistory(true);
+            }
+            dispatch(handleGetHistoryMessage(dataMessage));
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    }
   };
 
   return (
@@ -144,12 +233,18 @@ const MessageDetail = () => {
     </div> */}
       </div>
 
-      <div className="flex-1 text-white p-[20px] overflow-y-auto" ref={messRef}>
-        {messages.length > 0
-          ? messages.map(
+      <div
+        className="flex-1 text-white p-[20px] overflow-y-auto "
+        ref={messRef}
+        tabIndex={0}
+        onScroll={(e) => {
+          if (!onScrollBotton && !endHistory) handleScrollHistoryMgs(e);
+        }}
+      >
+        {messages?.data?.length > 0
+          ? messages?.data.map(
               ({
-                SenderID,
-                OtherAvatar,
+                SenderID = 1,
                 MessageID,
                 Content,
                 MessageTime,
@@ -164,7 +259,7 @@ const MessageDetail = () => {
                     key={MessageID}
                     data={{
                       SenderID,
-                      OtherAvatar,
+                      OtherAvatar: messages?.info?.OtherAvatar,
                       MessageID,
                       Content,
                       MessageTime,

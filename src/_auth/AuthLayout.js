@@ -7,7 +7,7 @@ import Logo from "../images/logoApp.png";
 
 import Header1 from "../components/Header/Header1";
 import background from "../images/background.jpg";
-
+import LazyLoad from "react-lazy-load";
 import { Auth } from "../service/utils/auth";
 import { ToastContainer } from "react-toastify";
 
@@ -47,10 +47,18 @@ const AuthLayout = () => {
           </h1>
           <div className="flex justify-center items-center mt-[30px]">
             <a href="#" className="">
-              <img src={appstore} alt="appstore" className="w-[200px]" />
+              <LazyLoad>
+                <img src={appstore} alt="appstore" className="w-[200px]" />
+              </LazyLoad>
             </a>
             <a href="#" className="">
-              <img src={chplay} alt="chplay" className="w-[230px] h-[100px]" />
+              <LazyLoad>
+                <img
+                  src={chplay}
+                  alt="chplay"
+                  className="w-[230px] h-[100px]"
+                />
+              </LazyLoad>
             </a>
           </div>
         </div>
@@ -64,7 +72,9 @@ const AuthLayout = () => {
 
           <div className="absolute top-1/2 -translate-y-3/4 left-[10%]">
             <div>
-              <img src={Logo} alt="logo" />
+              <LazyLoad>
+                <img src={Logo} alt="logo" />
+              </LazyLoad>
             </div>
             <h1 className="text-lg font-light text-white">
               Kết nối yêu thương

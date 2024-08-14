@@ -1,115 +1,115 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 #sidebar-message::-webkit-scrollbar,
 #sidebar-group::-webkit-scrollbar {
- width: 10px;
- outline: 1px solid #fff;
- background: transparent;
+  width: 10px;
+  outline: 1px solid #fff;
+  background: transparent;
 }
 
 #sidebar-message::-webkit-scrollbar-thumb,
 #sidebar-group::-webkit-scrollbar-thumb {
- background: #a7a3a3;
- border-radius: 5px;
+  background: #a7a3a3;
+  border-radius: 5px;
 }
 
 #sidebar-message::-webkit-scrollbar-thumb:hover,
 #sidebar-group::-webkit-scrollbar-thumb:hover {
- background: gray;
+  background: gray;
 }
 
 #textarea-post::-webkit-scrollbar {
- display: none;
+  display: none;
 }
 
 #sidebar-message .slick-track {
- margin: 0 !important;
+  margin: 0 !important;
 }
 
 /* css field birthday */
 
 .InfoUserInputBase-root {
- border: 1px solid green;
- border-radius: 33px !important;
- padding: 13px 30px;
+  border: 1px solid green;
+  border-radius: 33px !important;
+  padding: 13px 30px;
 }
 
 .InfoUserInputBase-root > input {
- color: white;
- padding: 0;
- font-size: 27px;
+  color: white;
+  padding: 0;
+  font-size: 27px;
 }
 
 .InfoUserInputBase-root > input:hover {
- outline: none;
+  outline: none;
 }
 
 .InfoUserInputBase-root > input::placeholder {
- color: white;
- font-size: 27px;
+  color: white;
+  font-size: 27px;
 }
 
 .InfoUserButtonBase-root.InfoUserIconButton-root {
- color: white;
- padding-right: 30px;
+  color: white;
+  padding-right: 30px;
 }
 
 .InfoUserButtonBase-root.InfoUserIconButton-root > svg {
- font-size: 27px;
+  font-size: 27px;
 }
 
 /* style dots slick slider */
 .create-info.slick-dots {
- bottom: -100px;
+  bottom: -100px;
 }
 
 .create-info.slick-dots > li {
- height: unset;
- width: unset;
+  height: unset;
+  width: unset;
 }
 
 .create-info.slick-dots > li.slick-active > div {
- background-color: #4ec957;
- transition: all 0.3s ease-in;
+  background-color: #4ec957;
+  transition: all 0.3s ease-in;
 }
 
 .create-info.slick-dots > li.slick-active > div:hover {
- opacity: 0.8;
+  opacity: 0.8;
 }
 
 @media (min-width: 450px) and (max-width: 800px) {
- #sidebar-group::-webkit-scrollbar {
-  width: 4px;
- }
+  #sidebar-group::-webkit-scrollbar {
+    width: 4px;
+  }
 
- #sidebar-group::-webkit-scrollbar-thumb {
-  border-radius: 3px;
- }
+  #sidebar-group::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+  }
 }
 
 /* style text Bio */
 
 p.mb-2.text-\[25px\].italic.text-\[\#8E8E8E\] {
- overflow: hidden;
- text-overflow: ellipsis;
- line-height: 1.2;
- -webkit-line-clamp: 3;
- display: -webkit-box;
- -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  -webkit-line-clamp: 3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
 }
 
 .user-list.slick-dots > li {
- width: 10px;
- height: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 p.message-item-text {
- overflow-wrap: anywhere;
- overflow: hidden;
- text-overflow: ellipsis;
- -webkit-line-clamp: 2;
- display: -webkit-box;
- -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
 }
