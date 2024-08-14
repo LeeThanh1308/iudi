@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, redirect, useLocation, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import { MdEmojiEmotions } from "react-icons/md";
+import { LuArrowBigUpDash } from "react-icons/lu";
 import { RiAttachment2, RiSendPlane2Fill } from "react-icons/ri";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,6 +45,8 @@ const MessageDetail = () => {
   const [endHistory, setEndHistory] = useState(false);
   const { userName, isOnline, avatar } = location.state;
   const messRef = useRef();
+
+  const inputSendMessageRef = useRef();
   const [messageForm, setMessageForm] = useState("");
 
   const { messages, postToggle } = useSelector(messagesSelector);
@@ -76,9 +79,11 @@ const MessageDetail = () => {
     }
   }, [messages, onScrollBotton]);
 
-  useEffect(() => {
-    handleLoadHistoryMessage();
-  }, [prevPage]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     handleLoadHistoryMessage();
+  //   }, 200);
+  // }, [prevPage]);
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -104,6 +109,7 @@ const MessageDetail = () => {
         .then((data) => dispatch(handleUpdateDataMessage(data.data[0])))
         .then(() => {
           setOnScrollBotton(true);
+          inputSendMessageRef.current.focus();
         })
         .catch(() => {});
       setMessageForm("");
@@ -139,29 +145,14 @@ const MessageDetail = () => {
     setShowEmoji(false);
   };
 
-  const handleScrollHistoryMgs = (e) => {
-    const scrollTop = e.target.scrollTop;
-    const containerHeight = e.target.scrollHeight - e.target.clientHeight;
-    const triggerHeight = containerHeight * 0.25;
-    console.table({
-      scrollTop,
-      containerHeight,
-      triggerHeight,
-      isLoading,
-      onScrollBotton,
-      isTrue: scrollTop <= triggerHeight,
-    });
-    if (scrollTop && scrollTop <= triggerHeight && !isLoading) {
-      setPrevPage((prevPage) => prevPage + 1); // Tăng trang khi cuộn lên 25%
-    }
-  };
-
   const handleLoadHistoryMessage = async () => {
-    if (messages?.data?.length > 0) {
+    if (messages?.data?.length > 0 && !isLoading) {
+      const nextPage = prevPage + 1;
+      const { MessageID } = messages?.data[0];
       setIsLoading(true);
       await axios
         .get(
-          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${prevPage}&limit=30`
+          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${nextPage}&limit=30`
         )
         .then((response) => response.data)
         .then((data) => {
@@ -169,10 +160,21 @@ const MessageDetail = () => {
           if (dataMessage) {
             if (Array.isArray(dataMessage) && dataMessage.length === 0) {
               setEndHistory(true);
+            } else {
+              return dispatch(handleGetHistoryMessage(dataMessage));
             }
-            dispatch(handleGetHistoryMessage(dataMessage));
-            setIsLoading(false);
           }
+        })
+        .then(() => {
+          setIsLoading(false);
+          const result = messRef.current.querySelector(
+            `div[data-mgs="${MessageID}-${id}"]`
+          );
+          if (result) {
+            result.scrollIntoView({ block: "end" });
+            result.focus();
+          }
+          setPrevPage(nextPage);
         })
         .catch(() => {
           setIsLoading(false);
@@ -214,49 +216,68 @@ const MessageDetail = () => {
           </div>
         </div>
 
-        {/* <div className='flex gap-5'>
-     <div>
-      <img
-       className='w-[35px] h-[35px] object-cover mobile:w-[25px] mobile:h-[25px]'
-       src={callVideo}
-       alt='call video'
-      />
-     </div>
+        {/* <div className="flex gap-5">
+          <div>
+            <img
+              className="w-[35px] h-[35px] object-cover mobile:w-[25px] mobile:h-[25px]"
+              src={callVideo}
+              alt="call video"
+            />
+          </div>
 
-     <div>
-      <img
-       className='w-[35px] h-[35px] object-cover mobile:w-[25px] mobile:h-[25px]'
-       src={callPhone}
-       alt='call phone'
-      />
-     </div>
-    </div> */}
+          <div>
+            <img
+              className="w-[35px] h-[35px] object-cover mobile:w-[25px] mobile:h-[25px]"
+              src={callPhone}
+              alt="call phone"
+            />
+          </div>
+        </div> */}
       </div>
 
       <div
-        className="flex-1 text-white p-[20px] overflow-y-auto "
+        className="flex-1 text-white p-[20px] overflow-hidden overflow-y-auto relative"
         ref={messRef}
-        tabIndex={0}
-        onScroll={(e) => {
-          if (!onScrollBotton && !endHistory) handleScrollHistoryMgs(e);
-        }}
       >
+        {!endHistory && messages.data.length > 0 ? (
+          <div
+            className={`absolute top-0 ] ${
+              isLoading ? "left-0 right-0 " : "right-0"
+            }`}
+          >
+            {!isLoading ? (
+              <div
+                onClick={() => {
+                  handleLoadHistoryMessage();
+                }}
+                className="mx-auto px-2 w-fit shadow-sm rounded-bl-lg shadow-black hover:text-bold text-black flex items-center cursor-pointer hover:font-bold bg-white"
+              >
+                <i>Xem thêm tin nhắn</i> <LuArrowBigUpDash />
+              </div>
+            ) : (
+              <div className="loader mx-auto mt-1">
+                <span />
+                <span />
+                <span />
+              </div>
+            )}
+          </div>
+        ) : (
+          ""
+        )}
         {messages?.data?.length > 0
           ? messages?.data.map(
-              ({
-                SenderID = 1,
-                MessageID,
-                Content,
-                MessageTime,
-                IsSeen,
-                Image,
-              }) => {
+              (
+                { SenderID, MessageID, Content, MessageTime, IsSeen, Image },
+                index
+              ) => {
                 SenderID === parseInt(id) &&
                   IsSeen === 0 &&
                   dispatch(postSeenMessage(MessageID));
+                // console.log(index, messages.data.length);
                 return (
                   <MessageDetailItem
-                    key={MessageID}
+                    key={`${MessageID}-${id}`}
                     data={{
                       SenderID,
                       OtherAvatar: messages?.info?.OtherAvatar,
@@ -266,6 +287,7 @@ const MessageDetail = () => {
                       idParams: id,
                       IsSeen,
                       Image,
+                      keyIndex: `${MessageID}-${id}`,
                       handleDeleteMessage,
                     }}
                   />
@@ -302,6 +324,7 @@ const MessageDetail = () => {
               className="flex flex-1 mr-5 mobile:mr-2 mobile:max-w-[70%] mobile:flex-0 focus-visible:outline-none bg-[white] text-black"
               type="text"
               placeholder="Hãy gửi lời chào..."
+              ref={inputSendMessageRef}
               onChange={(e) => setMessageForm(e.target.value)}
               value={messageForm}
             />

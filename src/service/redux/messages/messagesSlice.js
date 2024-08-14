@@ -31,13 +31,18 @@ export const messagesSlice = createSlice({
       if (!isExist) state.messages.data.push(action.payload);
     },
     handleGetHistoryMessage: (state, action) => {
-      if (Array.isArray(action.payload))
-        action.payload.map((item) => {
+      if (Array.isArray(action.payload) && action.payload.length > 0) {
+        const data = action.payload.map((item) => {
           const isExist = state.messages.data.find(
             (it) => it.MessageID === item.MessageID
           );
-          if (!isExist) state.messages.data.unshift(...action.payload);
+          // if (!isExist) state.messages.data.unshift(...action.payload);
+          if (!isExist) return item;
         });
+        state.messages.data.unshift(
+          ...data.sort((a, b) => a.MessageID - b.MessageID)
+        );
+      }
     },
   },
 
@@ -52,7 +57,7 @@ export const messagesSlice = createSlice({
       .addCase(postMessage.fulfilled, (state, action) => {
         const { userID } = new Auth();
         const { idSend } = action?.meta?.arg;
-        console.log(state, action);
+        // console.log(state, action);
         if (idSend !== userID) {
           state.postToggle = !state.postToggle;
         }
@@ -72,7 +77,7 @@ export const messagesReducer = messagesSlice.reducer;
 
 export const fetchMessages = createAsyncThunk(
   "messages/fetchMessageStatus",
-  async ({ otherUserId, userID, page = 1, limit = 20 }) => {
+  async ({ otherUserId, userID, page = 1, limit = 30 }) => {
     const { data, info } = await axios
       .get(
         `${API__SERVER}/pairmessage/${userID}?other_userId=${otherUserId}&page=${page}&limit=${limit}`

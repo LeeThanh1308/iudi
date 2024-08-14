@@ -15,12 +15,13 @@ const MessageDetailItem = (props) => {
     Content,
     MessageTime,
     idParams,
+    keyIndex,
     handleDeleteMessage,
     Image,
   } = props.data;
 
   return SenderID !== parseInt(idParams) ? (
-    <div className="flex justify-end">
+    <div className="flex justify-end" data-mgs={keyIndex}>
       <div className="flex flex-col items-end">
         {Content !== "" && Content !== null && (
           <div className="pb-3">
@@ -74,7 +75,7 @@ const MessageDetailItem = (props) => {
   ) : (
     <>
       {Content !== "" && Content !== null && (
-        <div className="pb-3">
+        <div className="pb-3" data-mgs={keyIndex}>
           <div className="flex items-center justify-start gap-3 ">
             <div>
               <img
