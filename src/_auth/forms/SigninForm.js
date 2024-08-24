@@ -49,14 +49,14 @@ function SigninForm() {
           "https://api.iudi.xyz/api/login",
           data
         );
-        const user = response?.data?.user.Users[0];
+        const user = response?.data?.user?.Users[0];
 
         console.log("response:", response);
         console.log("Phản hồi từ API:", response?.data);
 
         localStorage.setItem("IuDiToken", response?.data?.jwt);
-        localStorage.setItem("UserId", user.UserID);
-        localStorage.setItem("UserNameIuDi", user.Username);
+        localStorage.setItem("UserId", user?.UserID);
+        localStorage.setItem("UserNameIuDi", user?.Username);
 
         toast.success("Login successfully!", {
           position: "bottom-right",

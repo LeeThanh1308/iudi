@@ -19,23 +19,6 @@ const Navbar = () => {
   const [groupFirst, setGroupFirst] = useState({});
   const [isGetGroupFirst, setIsGetGroupFirst] = useState(false);
 
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await axios.get(
-          "https://api.iudi.xyz/api/forum/group/all_group"
-        );
-        // console.log(response);
-        //ERROR
-        setGroupFirst(response.data.data[0]);
-        setIsGetGroupFirst(true);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchGroups();
-  }, []);
-
   const { GroupName, GroupID, avatarLink } = groupFirst;
 
   const navList = [
@@ -46,24 +29,25 @@ const Navbar = () => {
       icon: <FaHome />,
     },
 
-    {
+    isLogin && {
       name: "Finding",
       link: "/finding",
       id: 2,
       icon: <FaUsersViewfinder />,
     },
 
-    {
+    isLogin && {
       name: "Profile",
       link: `/profile/${userName}`,
       id: 3,
       icon: <GiPlagueDoctorProfile />,
     },
 
-    isGetGroupFirst && {
+    // isGetGroupFirst &&
+    isLogin && {
       name: "Group",
       id: 4,
-      link: `/group/${slugString(GroupName)}/${GroupID}`,
+      link: `/group`,
       icon: <FaLayerGroup />,
     },
   ];
@@ -89,25 +73,29 @@ const Navbar = () => {
 
   return (
     <div className="flex items-center gap-4 ">
-      <div className="hidden mr-4 lg:block">
+      <div className="hidden mr-4 lg:block" onMouseEnter={(e) => e.target}>
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-          {navList.map(({ name, link, id }) => (
-            <li key={id}>
-              {name === "Group" ? (
-                <Link
-                  state={{ avatarLink, groupName: GroupName }}
-                  className="p-1 font-normal"
-                  to={link}
-                >
-                  {name}
-                </Link>
-              ) : (
-                <Link className="p-1 font-normal" to={link}>
-                  {name}
-                </Link>
-              )}
-            </li>
-          ))}
+          {navList.map((items) => {
+            if (!items) return null;
+            const { id, name, link } = items;
+            return (
+              <li key={id}>
+                {name === "Group" ? (
+                  <Link
+                    state={{ avatarLink, groupName: GroupName }}
+                    className="p-1 font-normal"
+                    to={link}
+                  >
+                    {name}
+                  </Link>
+                ) : (
+                  <Link className="p-1 font-normal" to={link}>
+                    {name}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className="flex items-center gap-x-1">
@@ -161,15 +149,19 @@ const Navbar = () => {
             </button>
           </div>
 
-          {navList.map(({ id, name, link, icon }) => (
-            <li
-              key={id}
-              className="flex items-center gap-2 py-2 duration-100 hover:bg-gray-800"
-            >
-              {icon}
-              <Link to={link}>{name}</Link>
-            </li>
-          ))}
+          {navList.map((items) => {
+            if (!items) return null;
+            const { id, name, link, icon } = items;
+            return (
+              <li
+                key={id}
+                className="flex items-center gap-2 py-2 duration-100 hover:bg-gray-800"
+              >
+                {icon}
+                <Link to={link}>{name}</Link>
+              </li>
+            );
+          })}
 
           {!isLogin ? (
             <div>

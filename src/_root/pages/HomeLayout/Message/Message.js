@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
+import LazyLoading from "react-lazy-load";
 import Slider from "react-slick";
 
 import {
@@ -95,7 +95,7 @@ const Message = () => {
     });
 
     socket.on("online", (data) => {
-      console.log(data.user);
+      // console.log(data.user);
       setUserIdOtherList(data.user);
     });
   }, [userID]);
@@ -172,12 +172,14 @@ const Message = () => {
       <Slider {...settings}>
         <div className="text-center">
           <Link to={`/profile/${userName}`}>
-            <img
-              className="mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-              src={`${URL_BASE64}${userState.user.avatarLink}`}
-              alt="avatar"
-              onError={(e) => handleErrorImg(e.target)}
-            />
+            <LazyLoading>
+              <img
+                className="mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
+                src={`${userState.user.avatarLink}`}
+                alt="avatar"
+                onError={(e) => handleErrorImg(e.target)}
+              />
+            </LazyLoading>
             <h5 className="font-medium capitalize">{userName}</h5>
           </Link>
         </div>
@@ -209,6 +211,7 @@ const Message = () => {
                 MessageID,
                 Content,
                 OtherUsername,
+                Avatar,
                 OtherAvatar,
                 MessageTime,
                 OtherUserID,
@@ -231,6 +234,7 @@ const Message = () => {
                       Content,
                       OtherUsername,
                       OtherAvatar,
+                      Avatar,
                       MessageTime,
                       OtherUserID,
                       refImg: imgAvatarRef,

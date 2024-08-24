@@ -55,12 +55,13 @@ export const messagesSlice = createSlice({
         state.historyMessages = action.payload;
       })
       .addCase(postMessage.fulfilled, (state, action) => {
-        const { userID } = new Auth();
-        const { idSend } = action?.meta?.arg;
-        // console.log(state, action);
-        if (idSend !== userID) {
-          state.postToggle = !state.postToggle;
-        }
+        // const { userID } = new Auth();
+        // const { idSend } = action?.meta?.arg;
+        // if (idSend !== userID) {
+        state.postToggle = !state.postToggle;
+        // } else {
+        //   state.postToggle = true;
+        // }
       })
       .addCase(deleteMessage.fulfilled, (state, action) => {
         state.postToggle = !state.postToggle;
@@ -94,7 +95,9 @@ export const postMessage = createAsyncThunk(
   "messages/postMessageStatus",
   async (data) => {
     try {
+      console.log(data);
       const res = await socket.emit("send_message", data);
+      console.log(res);
     } catch (error) {
       console.log("error", error);
     }

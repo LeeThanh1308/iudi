@@ -31,6 +31,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import config from "../../../../configs/Configs.json";
 import { data } from "autoprefixer";
+import LazyLoad from "react-lazy-load";
 const { URL_BASE64, API__SERVER } = config;
 const socket = io("https://api.iudi.xyz");
 
@@ -44,6 +45,8 @@ const MessageDetail = () => {
   const [onScrollBotton, setOnScrollBotton] = useState(true);
   const [endHistory, setEndHistory] = useState(false);
   const { userName, isOnline, avatar } = location.state;
+  const [imageUrl, setImageUrl] = useState(null);
+  const [dataSendMessage, setDataSendMessage] = useState({});
   const messRef = useRef();
 
   const inputSendMessageRef = useRef();
@@ -56,34 +59,36 @@ const MessageDetail = () => {
     dispatch(fetchMessages({ otherUserId: id, userID }));
   }, [id, postToggle]);
 
+  console.log(id);
+
   useEffect(() => {
     // client connect to server
     socket.emit("userId", { userId: userID });
 
     socket.on("check_message", (message) => {
-      const { ReceiverID, SenderID, ...args } = message.data;
-      dispatch(fetchMessages({ otherUserId: SenderID, userID: ReceiverID }));
+      const { ReceiverID, SenderID } = message.data;
       dispatch(fetchHistoryMessages(ReceiverID));
-      setTimeout(() => {
-        setOnScrollBotton((prev) => (prev = true));
-      }, 2000);
-      // console.table({ ReceiverID, SenderID, args });
+      if (id === SenderID) {
+        dispatch(fetchMessages({ otherUserId: SenderID, userID: ReceiverID }));
+        setTimeout(() => {
+          setOnScrollBotton((prev) => (prev = true));
+        }, 2000);
+      }
     });
-  }, [userID]);
+  }, [userID, id]);
 
   useEffect(() => {
     if (onScrollBotton) {
       messRef.current.scrollTop = messRef.current.scrollHeight;
+
       messRef.current.focus();
       setOnScrollBotton((prev) => !prev);
     }
   }, [messages, onScrollBotton]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     handleLoadHistoryMessage();
-  //   }, 200);
-  // }, [prevPage]);
+  useEffect(() => {
+    inputSendMessageRef.current.focus();
+  }, [imageUrl]);
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -94,11 +99,11 @@ const MessageDetail = () => {
         idReceive: parseInt(id),
         idSend: userID,
         MessageTime: new Date(),
-        Image: imageUrl,
+        Image: dataSendMessage.imageUrl,
       };
 
       await dispatch(postMessage(data));
-      dispatch(fetchHistoryMessages(userID));
+      // dispatch(fetchHistoryMessages(userID));
       axios
         .get(
           `${API__SERVER}/pairmessage/${userID}?other_userId=${
@@ -121,12 +126,15 @@ const MessageDetail = () => {
     dispatch(deleteMessage({ messageID, userID }));
   };
 
-  const [imageUrl, setImageUrl] = useState(null);
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+    const formdata = new FormData();
+    formdata.append("file", file);
+    setDataSendMessage((prev) => ({
+      ...prev,
+      imageUrl: file,
+    }));
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
@@ -182,6 +190,8 @@ const MessageDetail = () => {
     }
   };
 
+  // console.log(dataSendMessage);
+
   return (
     <div className="pb-5 bg-white rounded-3xl h-full flex flex-col">
       <div className="flex mobile:p-3 p-5 items-center justify-between border-b-[#817C7C] border-b border-solid">
@@ -193,12 +203,14 @@ const MessageDetail = () => {
           </Link>
 
           <Link to={`/profile/${userName}`}>
-            <img
-              className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-              src={`${URL_BASE64}${avatar}`}
-              alt="avatar default"
-              onError={(e) => handleErrorImg(e.target)}
-            />
+            <LazyLoad>
+              <img
+                className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
+                src={`${avatar}`}
+                alt="avatar default"
+                onError={(e) => handleErrorImg(e.target)}
+              />
+            </LazyLoad>
           </Link>
 
           <div className="flex flex-col justify-center text-black">
@@ -266,11 +278,16 @@ const MessageDetail = () => {
           ""
         )}
         {messages?.data?.length > 0
-          ? messages?.data.map(
-              (
-                { SenderID, MessageID, Content, MessageTime, IsSeen, Image },
-                index
-              ) => {
+          ? messages?.data.map((data) => {
+              if (data?.SenderID) {
+                const {
+                  SenderID,
+                  MessageID,
+                  Content,
+                  MessageTime,
+                  IsSeen,
+                  Image,
+                } = data;
                 SenderID === parseInt(id) &&
                   IsSeen === 0 &&
                   dispatch(postSeenMessage(MessageID));
@@ -292,8 +309,10 @@ const MessageDetail = () => {
                     }}
                   />
                 );
+              } else {
+                return null;
               }
-            )
+            })
           : ""}
       </div>
 
@@ -304,11 +323,13 @@ const MessageDetail = () => {
         >
           {imageUrl && (
             <div className="relative max-w-max">
-              <img
-                className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
-                src={`${URL_BASE64}${imageUrl}`}
-                alt="sendImage"
-              />
+              <LazyLoad>
+                <img
+                  className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
+                  src={`${URL_BASE64}${imageUrl}`}
+                  alt="sendImage"
+                />
+              </LazyLoad>
 
               <button
                 className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm"

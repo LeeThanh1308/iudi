@@ -56,11 +56,13 @@ const MessageDetailItem = (props) => {
                 <MdDelete />
               </button>
 
-              <img
-                className="max-w-[250px] max-h-[150px] object-contain rounded"
-                src={`${URL_BASE64}${Image}`}
-                alt="sendImage"
-              />
+              <LazyLoad>
+                <img
+                  className="max-w-[250px] max-h-[150px] object-contain rounded"
+                  src={`${URL_BASE64}${Image}`}
+                  alt="sendImage"
+                />
+              </LazyLoad>
             </div>
 
             <Moment
@@ -78,12 +80,14 @@ const MessageDetailItem = (props) => {
         <div className="pb-3" data-mgs={keyIndex}>
           <div className="flex items-center justify-start gap-3 ">
             <div>
-              <img
-                className="w-[40px] h-[40px] rounded-full object-cover"
-                src={`${URL_BASE64}${OtherAvatar}`}
-                alt="avatar default"
-                onError={(e) => handleErrorImg(e.target)}
-              />
+              <LazyLoad>
+                <img
+                  className="w-[40px] h-[40px] rounded-full object-cover"
+                  src={`${OtherAvatar}`}
+                  alt="avatar default"
+                  onError={(e) => handleErrorImg(e.target)}
+                />
+              </LazyLoad>
             </div>
 
             <div className="flex items-center gap-1 group">
@@ -113,7 +117,7 @@ const MessageDetailItem = (props) => {
               <LazyLoad>
                 <img
                   className="w-[40px] h-[40px] rounded-full object-cover"
-                  src={`${URL_BASE64}${OtherAvatar}`}
+                  src={`${OtherAvatar}`}
                   alt="avatar default"
                   onError={(e) => handleErrorImg(e.target)}
                 />
@@ -124,7 +128,7 @@ const MessageDetailItem = (props) => {
               <LazyLoad>
                 <img
                   className="max-w-[250px] max-h-[150px] object-contain rounded"
-                  src={`${URL_BASE64}${Image}`}
+                  src={`${Image}`}
                   alt="sendImage"
                 />
               </LazyLoad>

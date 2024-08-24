@@ -12,6 +12,7 @@ import { MdDelete } from "react-icons/md";
 import { handleErrorImg } from "../../../../service/utils/utils";
 
 import config from "../../../../configs/Configs.json";
+import LazyLoad from "react-lazy-load";
 const { URL_BASE64 } = config;
 
 const ReplyItem = (props) => {
@@ -26,7 +27,6 @@ const ReplyItem = (props) => {
     Avatar,
     PhotoURL,
   } = props.data;
-
 
   const dispatch = useDispatch();
 
@@ -49,11 +49,13 @@ const ReplyItem = (props) => {
               <p className="text-xs">{Content}</p>
             </div>
             {PhotoURL?.length > 0 && (
-              <img
-                className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
-                src={`${URL_BASE64}${PhotoURL}`}
-                alt="comment-image"
-              />
+              <LazyLoad>
+                <img
+                  className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
+                  src={`${PhotoURL[0]}`}
+                  alt="comment-image"
+                />
+              </LazyLoad>
             )}
           </div>
 

@@ -13,6 +13,7 @@ import { handleErrorImg } from "../../../../service/utils/utils";
 
 import config from "../../../../configs/Configs.json";
 import ReplyComment from "./ReplyComment";
+import LazyLoad from "react-lazy-load";
 const { URL_BASE64 } = config;
 
 const CommentItem = (props) => {
@@ -39,7 +40,7 @@ const CommentItem = (props) => {
       <div>
         <img
           className="w-[42px] h-[42px] object-cover rounded-full"
-          src={`${URL_BASE64}${Avatar}`}
+          src={`${PhotoURL ? PhotoURL[0] : URL_BASE64 + Avatar}`}
           alt="avatar"
           onError={(e) => handleErrorImg(e.target)}
         />
@@ -51,11 +52,13 @@ const CommentItem = (props) => {
             <h3 className="text-xs font-semibold capitalize">{FullName}</h3>
             <p className="text-xs">{Content}</p>
             {PhotoURL?.length > 0 && (
-              <img
-                className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
-                src={`${URL_BASE64}${PhotoURL}`}
-                alt="comment-image"
-              />
+              <LazyLoad>
+                <img
+                  className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
+                  src={`${PhotoURL[0]}`}
+                  alt="comment-image"
+                />
+              </LazyLoad>
             )}
           </div>
 

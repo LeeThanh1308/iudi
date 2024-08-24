@@ -146,3 +146,24 @@ p.message-item-text {
     opacity: 0;
   }
 }
+
+/* li.slick-active {
+  display: flex;
+  justify-content: center;
+} */
+li.slick-active > div {
+  width: 12px !important;
+  height: 12px !important;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.dost-slider-custom > li {
+  margin: 0 8px;
+}
+
+.dost-slider-custom {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}

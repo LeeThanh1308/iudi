@@ -41,7 +41,9 @@ const AuthLayout = () => {
       >
         <Header1 />
         <div className="flex flex-col justify-center items-center mt-[100px] relative top-[-150px]">
-          <img src={Logo} alt="Your" className="w-[400px] tablet:w-[200px]" />
+          <LazyLoad>
+            <img src={Logo} alt="Your" className="w-[400px] tablet:w-[200px]" />
+          </LazyLoad>
           <h1 className="font-bold text-white text-7xl ipad:text-4xl tablet:text-4xl">
             Kết Nối Yêu Thương
           </h1>

@@ -77,11 +77,10 @@ const Group = () => {
   const [memberCount, setMemberCount] = useState(0);
 
   const fetchMembersGroup = async (groupId) => {
-    const res = await axios.get(
-      `${API__SERVER}/forum/list_member_group/${groupId}`
-    );
-
-    setMemberCount(res.data.data.length);
+    const res = await axios
+      .get(`${API__SERVER}/forum/list_member_group/${groupId}`)
+      .catch((err) => {});
+    if (res?.data?.data) setMemberCount(res?.data?.data?.length);
   };
 
   useEffect(() => {
@@ -155,12 +154,15 @@ const Group = () => {
   const [isMember, setIsMember] = useState(false);
 
   const isCheckMember = async () => {
-    const res = await axios.post(
-      `https://api.iudi.xyz/api/forum/check_member_group/${userID}/${groupId}`
-    );
-
-    const isMember = res.data.message === "You are in group" ? true : false;
-    setIsMember(isMember);
+    const res = await axios
+      .post(
+        `https://api.iudi.xyz/api/forum/check_member_group/${userID}/${groupId}`
+      )
+      .catch(() => {});
+    if (res?.data) {
+      const isMember = res?.data?.message === "You are in group" ? true : false;
+      setIsMember(isMember);
+    }
   };
 
   useEffect(() => {
