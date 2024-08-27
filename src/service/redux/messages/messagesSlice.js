@@ -78,7 +78,7 @@ export const messagesReducer = messagesSlice.reducer;
 
 export const fetchMessages = createAsyncThunk(
   "messages/fetchMessageStatus",
-  async ({ otherUserId, userID, page = 1, limit = 30 }) => {
+  async ({ otherUserId, userID, page = 1, limit = 15 }) => {
     const { data, info } = await axios
       .get(
         `${API__SERVER}/pairmessage/${userID}?other_userId=${otherUserId}&page=${page}&limit=${limit}`
@@ -97,7 +97,6 @@ export const postMessage = createAsyncThunk(
     try {
       console.log(data);
       const res = await socket.emit("send_message", data);
-      console.log(res);
     } catch (error) {
       console.log("error", error);
     }

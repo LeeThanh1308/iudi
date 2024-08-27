@@ -99,7 +99,7 @@ const MessageDetail = () => {
         idReceive: parseInt(id),
         idSend: userID,
         MessageTime: new Date(),
-        Image: dataSendMessage.imageUrl,
+        Image: imageUrl,
       };
 
       await dispatch(postMessage(data));
@@ -160,7 +160,7 @@ const MessageDetail = () => {
       setIsLoading(true);
       await axios
         .get(
-          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${nextPage}&limit=30`
+          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${nextPage}&limit=15`
         )
         .then((response) => response.data)
         .then((data) => {

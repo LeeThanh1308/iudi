@@ -44,15 +44,12 @@ const MessageHistoryItem = (props) => {
       >
         <div className="flex items-center justify-between mt-4 cursor-pointer">
           <div className="flex items-center gap-2">
-            <LazyLoad>
-              <img
-                className=" mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-                src={`${OtherAvatar}`}
-                alt={`avatar ${OtherUsername}`}
-                onError={(e) => handleErrorImg(e.target)}
-              />
-            </LazyLoad>
-
+            <img
+              className=" mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
+              src={`${OtherAvatar}`}
+              alt={`avatar ${OtherUsername}`}
+              onError={(e) => handleErrorImg(e.target)}
+            />
             <div>
               <h3 className="capitalize text-xl tablet:text-lg mobile:text-sm font-medium">
                 {OtherUsername}

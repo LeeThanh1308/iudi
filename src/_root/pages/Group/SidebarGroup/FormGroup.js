@@ -58,12 +58,14 @@ const FormGroup = ({ data }) => {
   const [inputFileImage, setInputFileImage] = useState({
     file: "",
     imageUpload: null,
+    fileAvatar: null,
   });
 
   const { imageUpload, file } = inputFileImage;
 
   const handleChangeUploadImage = (e) => {
     let file = e.target.files[0];
+    console.log(file);
     if (!file) return;
 
     const reader = new FileReader();
@@ -75,6 +77,7 @@ const FormGroup = ({ data }) => {
         ...inputFileImage,
         imageUpload: base64Url,
         file: e.target.value,
+        fileAvatar: file,
       });
 
       setValue("avatarLink", base64Url);
@@ -83,9 +86,15 @@ const FormGroup = ({ data }) => {
 
   const onSubmit = async (data) => {
     try {
+      console.log(data);
+      const formData = new FormData();
+      formData.append("GroupName", data.GroupName);
+      formData.append("userNumber", data.userNumber);
+      formData.append("avatarLink", inputFileImage.fileAvatar);
+      console.log(inputFileImage);
       const res = await axios.post(
         `${API__SERVER}/forum/group/add_group/${userID}`,
-        data
+        formData
       );
 
       toast.success("Group added successfully!");

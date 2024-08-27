@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import { Pagination } from "antd";
 import { Link } from "react-router-dom";
 
 import Footer from "../../../components/Footer/Footer";
@@ -24,6 +24,7 @@ function Finding() {
   const { userID } = new Auth();
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([]);
+  const [totalPage, setTotalPage] = useState(0);
 
   const setting = JSON.parse(localStorage.getItem("findingSetting"));
 
@@ -32,27 +33,30 @@ function Finding() {
   }, [page]);
 
   const handleGetUsers = async (set, nextStep = 1) => {
+    console.log(set, nextStep);
     const res = await axios.get(
       `https://api.iudi.xyz/api/location/${userID}/${
         set?.radius * 1000 || FINDING_DEFAULT
       }?page=${nextStep}`
     );
+    console.log(res);
 
-    const data = res.data.Distances;
+    const data = res?.data?.Distances;
 
-    if (users.length > 0) {
-      const dataFilter = data.filter((user) => {
-        const userAge =
-          new Date().getFullYear() - new Date(user.BirthDate).getFullYear();
+    // if (users.length > 0 && data.length > 0) {
+    //   const dataFilter = data.filter((user) => {
+    //     const userAge =
+    //       new Date().getFullYear() - new Date(user.BirthDate).getFullYear();
 
-        const isAgeMatch = userAge >= parseInt(setting.minAge);
-        const isSexMatch = user.Gender === setting.gender;
+    //     const isAgeMatch = userAge >= parseInt(setting?.minAge);
+    //     const isSexMatch = user?.Gender === setting?.gender;
 
-        return isAgeMatch && isSexMatch;
-      });
-
-      return setUsers(dataFilter);
-    }
+    //     return isAgeMatch && isSexMatch;
+    //   });
+    //   setTotalPage(res?.data?.TotalPage);
+    //   return setUsers(dataFilter);
+    // }
+    setTotalPage(res?.data?.TotalPage);
     return setUsers(data);
   };
 
@@ -70,6 +74,19 @@ function Finding() {
         <div className="relative">
           <div className="px-[40px]">
             <UserList users={users.sort((a, b) => a.Distance - b.Distance)} />
+          </div>
+          <div className=" mt-4 mb-3">
+            <Pagination
+              total={totalPage * 30}
+              pageSize={30}
+              onChange={(page, pageSize) => {
+                setPage(page);
+              }}
+              showLessItems={false}
+              showQuickJumper={false}
+              showSizeChanger={false}
+              align="center"
+            />
           </div>
         </div>
         <Footer />

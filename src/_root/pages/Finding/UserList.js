@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
 import Slider from "react-slick";
 
 import { AiOutlineHome, AiOutlineMail } from "react-icons/ai";
@@ -15,9 +14,10 @@ import {
 import bgProfile from "../../../images/profiles/bg-profile.png";
 
 import { handleErrorImg } from "../../../service/utils/utils";
+import LazyLoad from "react-lazy-load";
 
-import configs from "../../../configs/Configs.json";
-const { URL_BASE64 } = configs;
+// import configs from "../../../configs/Configs.json";
+// const { URL_BASE64 } = configs;
 
 const UserList = ({ users }) => {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const UserList = ({ users }) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+
     dotsClass: "dost-slider-custom",
 
     responsive: [
@@ -116,10 +117,7 @@ const UserList = ({ users }) => {
           ];
 
           return (
-            <div
-              className="flex items-center justify-center py-[100px]"
-              key={UserID}
-            >
+            <div className="flex items-center justify-center py-3" key={UserID}>
               <div className="bg-white mx-auto rounded-[30px] ipad:max-w-[360px] w-[550px] overflow-hidden border-2  border-[#4EC957]">
                 <div
                   style={{
@@ -129,12 +127,14 @@ const UserList = ({ users }) => {
                 ></div>
 
                 <div className="mt-[-80px] z-[1] ipad:mt-[-50px]">
-                  <img
-                    onError={(e) => handleErrorImg(e.target)}
-                    src={`${avatarLink}`}
-                    alt="avatar user"
-                    className="mx-auto ipad:w-[80px] ipad:h-[80px] text-white rounded-full h-[130px] w-[130px] object-cover  border-2 border-pink-100"
-                  />
+                  <LazyLoad>
+                    <img
+                      onError={(e) => handleErrorImg(e.target)}
+                      src={`${avatarLink}`}
+                      alt="avatar user"
+                      className="mx-auto ipad:w-[80px] ipad:h-[80px] text-white rounded-full h-[130px] w-[130px] object-cover  border-2 border-pink-100"
+                    />
+                  </LazyLoad>
                 </div>
 
                 <div className="px-[50px] pb-5 ipad:p-3">
