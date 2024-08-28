@@ -199,19 +199,23 @@ const PostItem = (props) => {
                 display: "grid",
               }}
             >
-              {Photo.map((image) => (
-                <li
-                  key={uuidv4()}
-                  className="col-span-1 max-h-[300px] overflow-hidden"
-                >
-                  <img
-                    className="object-cover h-full w-full"
-                    src={`${URL_BASE64}${image}`}
-                    alt={Title}
-                    onError={(e) => handleErrorImgPost(e.target)}
-                  />
-                </li>
-              ))}
+              {Array.isArray(Photo) &&
+                Photo.length > 0 &&
+                Photo.map((image) => (
+                  <li
+                    key={uuidv4()}
+                    className="col-span-1 max-h-[300px] overflow-hidden"
+                  >
+                    <LazyLoad>
+                      <img
+                        className="object-cover h-full w-full"
+                        src={`${image}`}
+                        alt={Title}
+                        onError={(e) => handleErrorImgPost(e.target)}
+                      />
+                    </LazyLoad>
+                  </li>
+                ))}
             </ul>
           )}
         </div>

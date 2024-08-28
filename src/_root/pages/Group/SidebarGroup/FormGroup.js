@@ -89,7 +89,7 @@ const FormGroup = ({ data }) => {
       console.log(data);
       const formData = new FormData();
       formData.append("GroupName", data.GroupName);
-      formData.append("userNumber", Number(data.userNumber));
+      formData.append("UserNumber", Number(data.userNumber));
       formData.append("avatarLink", inputFileImage.fileAvatar);
       console.log(inputFileImage);
       const res = await axios.post(
