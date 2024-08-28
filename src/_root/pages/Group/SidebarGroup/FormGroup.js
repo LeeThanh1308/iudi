@@ -89,7 +89,7 @@ const FormGroup = ({ data }) => {
       console.log(data);
       const formData = new FormData();
       formData.append("GroupName", data.GroupName);
-      formData.append("userNumber", data.userNumber);
+      formData.append("userNumber", Number(data.userNumber));
       formData.append("avatarLink", inputFileImage.fileAvatar);
       console.log(inputFileImage);
       const res = await axios.post(
@@ -134,7 +134,7 @@ const FormGroup = ({ data }) => {
           <div>
             <img
               className="w-[50px] h-[50px] rounded-full object-cover"
-              src={`${URL_BASE64}${userState.user.avatarLink}`}
+              src={`${userState.user.avatarLink}`}
               alt="avatar user"
               onError={(e) => handleErrorImg(e.target)}
             />

@@ -12,6 +12,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchHistoryMessages,
+  fetchMessages,
   messagesSelector,
 } from "../../../../service/redux/messages/messagesSlice";
 import { usersSelector } from "../../../../service/redux/users/usersSlice";
@@ -88,9 +89,7 @@ const Message = () => {
     socket.emit("userId", { userId: userID });
 
     socket.on("check_message", (message) => {
-      const { ReceiverID, SenderID, ...args } = message.data;
-      // console.log(ReceiverID, SenderID, args);
-      // dispatch(fetchMessages({ otherUserId: ReceiverID, userID: SenderID }));
+      const { ReceiverID } = message.data;
       dispatch(fetchHistoryMessages(ReceiverID));
     });
 
@@ -217,7 +216,7 @@ const Message = () => {
                 OtherUserID,
                 IsSeen,
                 SenderID,
-                Image,
+                imageLink: Image,
               }) => {
                 let isOnline = false;
                 userIdOtherList.some(

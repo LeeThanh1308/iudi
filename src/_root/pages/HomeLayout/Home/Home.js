@@ -19,6 +19,7 @@ import {
 
 import NavMobile from "../../../../components/NavMobile/NavMobile";
 import config from "../../../../configs/Configs.json";
+import LazyLoad from "react-lazy-load";
 
 const { URL_BASE64 } = config;
 
@@ -65,13 +66,17 @@ const Home = () => {
 
         <div className="ipad:flex mt-4 justify-center hidden ">
           <Link to="/message">
-            <img src={Chat} alt="chat" />
+            <LazyLoad>
+              <img src={Chat} alt="chat" />
+            </LazyLoad>
           </Link>
         </div>
       </div>
 
       <div className="bg-[rgba(255,255,255,0)] relative w-full min-h-screen hidden mobile:block">
-        <img src={Background} alt="bg" className="w-full" />
+        <LazyLoad>
+          <img src={Background} alt="bg" className="w-full" />
+        </LazyLoad>
         <div className="absolute top-0 left-0 pt-5 w-full">
           <Header4 />
         </div>
@@ -96,11 +101,13 @@ const Home = () => {
             </div>
 
             <Link to={`profile/${userName}`}>
-              <img
-                src={star}
-                alt="profile"
-                className="block mx-auto mt-[10px] rounded-full p-[5px] shadow"
-              />
+              <LazyLoad>
+                <img
+                  src={star}
+                  alt="profile"
+                  className="block mx-auto mt-[10px] rounded-full p-[5px] shadow"
+                />
+              </LazyLoad>
             </Link>
           </div>
           <div className="absolute border-solid border-[5px] w-[80%] h-[465px] z-10 bg-white -mt-48 left-1/2 transform -translate-x-1/2 rounded-[20px] shadow-md"></div>

@@ -184,7 +184,7 @@ const FormPost = (props) => {
           <div>
             <img
               className="w-[50px] h-[50px] rounded-full object-cover"
-              src={`${URL_BASE64}${userState.user.avatarLink}`}
+              src={`${userState.user.avatarLink}`}
               alt="avatar user"
               onError={(e) => handleErrorImg(e.target)}
             />

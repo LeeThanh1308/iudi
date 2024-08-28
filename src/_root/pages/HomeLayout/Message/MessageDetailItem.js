@@ -18,6 +18,7 @@ const MessageDetailItem = (props) => {
     keyIndex,
     handleDeleteMessage,
     Image,
+    ImageBase64,
   } = props.data;
 
   return SenderID !== parseInt(idParams) ? (
@@ -45,7 +46,7 @@ const MessageDetailItem = (props) => {
           </div>
         )}
 
-        {Image && (
+        {ImageBase64 && (
           <div className="pb-3">
             <div className="flex items-center gap-1 group">
               <button
@@ -59,8 +60,9 @@ const MessageDetailItem = (props) => {
               <LazyLoad>
                 <img
                   className="max-w-[250px] max-h-[150px] object-contain rounded"
-                  src={`${URL_BASE64}${Image}`}
-                  alt="sendImage"
+                  src={`${URL_BASE64 + ImageBase64}`}
+                  onError={(e) => (e.target.src = ImageBase64)}
+                  alt="sendImageBase64"
                 />
               </LazyLoad>
             </div>
@@ -110,7 +112,7 @@ const MessageDetailItem = (props) => {
         </div>
       )}
 
-      {Image && (
+      {ImageBase64 && (
         <div className="pb-3">
           <div className="flex items-center justify-start gap-3 ">
             <div>
@@ -128,7 +130,8 @@ const MessageDetailItem = (props) => {
               <LazyLoad>
                 <img
                   className="max-w-[250px] max-h-[150px] object-contain rounded"
-                  src={`${Image}`}
+                  src={`${URL_BASE64 + ImageBase64}`}
+                  onError={(e) => (e.target.src = ImageBase64)}
                   alt="sendImage"
                 />
               </LazyLoad>

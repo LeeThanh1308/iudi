@@ -29,6 +29,7 @@ import config from "../../../configs/Configs.json";
 import Policy from "./Policy";
 import PersonalImg from "./PersonalImg";
 import PersonalPrivate from "./PersonalPrivate";
+import LazyLoad from "react-lazy-load";
 
 const { URL_BASE64 } = config;
 
@@ -265,11 +266,13 @@ function Personal() {
             ) : (
               <>
                 <div className="flex items-end justify-center">
-                  <img
-                    src={`${URL_BASE64}${avatar}`}
-                    alt="personal"
-                    className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover"
-                  />
+                  <LazyLoad>
+                    <img
+                      src={`${avatar}`}
+                      alt="personal"
+                      className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover"
+                    />
+                  </LazyLoad>
 
                   <label htmlFor="imageUpload" className="cursor-pointer">
                     <input
@@ -361,11 +364,14 @@ function Personal() {
       ) : (
         <>
           <div className="flex items-end justify-center">
-            <img
-              src={`${URL_BASE64}${avatar}`}
-              alt="personal"
-              className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover"
-            />
+            <LazyLoad>
+              {" "}
+              <img
+                src={`${avatar}`}
+                alt="personal"
+                className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover"
+              />
+            </LazyLoad>
 
             <label htmlFor="imageUpload" className="cursor-pointer">
               <input

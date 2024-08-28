@@ -46,7 +46,7 @@ const MessageDetail = () => {
   const [endHistory, setEndHistory] = useState(false);
   const { userName, isOnline, avatar } = location.state;
   const [imageUrl, setImageUrl] = useState(null);
-  const [dataSendMessage, setDataSendMessage] = useState({});
+  const [fileImage, setFileImage] = useState();
   const messRef = useRef();
 
   const inputSendMessageRef = useRef();
@@ -59,21 +59,26 @@ const MessageDetail = () => {
     dispatch(fetchMessages({ otherUserId: id, userID }));
   }, [id, postToggle]);
 
-  console.log(id);
+  // console.log(id);
 
   useEffect(() => {
     // client connect to server
     socket.emit("userId", { userId: userID });
 
-    socket.on("check_message", (message) => {
+    socket.on("check_message", async (message) => {
+      console.log(message.data);
       const { ReceiverID, SenderID } = message.data;
-      dispatch(fetchHistoryMessages(ReceiverID));
-      if (id === SenderID) {
-        dispatch(fetchMessages({ otherUserId: SenderID, userID: ReceiverID }));
-        setTimeout(() => {
-          setOnScrollBotton((prev) => (prev = true));
-        }, 2000);
-      }
+
+      // console.table({ReceiverID, SenderID, id});
+      // if (id === SenderID) {
+      await dispatch(
+        fetchMessages({ otherUserId: SenderID, userID: ReceiverID })
+      );
+      await dispatch(fetchHistoryMessages(ReceiverID));
+      setTimeout(() => {
+        setOnScrollBotton((prev) => !prev);
+      }, 500);
+      // }
     });
   }, [userID, id]);
 
@@ -99,9 +104,27 @@ const MessageDetail = () => {
         idReceive: parseInt(id),
         idSend: userID,
         MessageTime: new Date(),
-        Image: imageUrl,
       };
-
+      setMessageForm("");
+      if (fileImage) {
+        await axios
+          .post(
+            `${API__SERVER}/uploadimage/${userID}`,
+            {
+              idReceive: Number(id),
+              imageLink: fileImage,
+            },
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
+          .finally(() => {
+            setFileImage("");
+            setImageUrl(null);
+          });
+      }
       await dispatch(postMessage(data));
       // dispatch(fetchHistoryMessages(userID));
       axios
@@ -117,8 +140,6 @@ const MessageDetail = () => {
           inputSendMessageRef.current.focus();
         })
         .catch(() => {});
-      setMessageForm("");
-      setImageUrl(null);
     }
   };
 
@@ -128,18 +149,16 @@ const MessageDetail = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (!file) return;
-    const formdata = new FormData();
-    formdata.append("file", file);
-    setDataSendMessage((prev) => ({
-      ...prev,
-      imageUrl: file,
-    }));
+    // const formdata = new FormData();
+    // formdata.append("file", file);
+    setFileImage(file);
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onloadend = () => {
-      const base64Url = reader.result.split(",")[1];
+      const base64Url = reader.result;
       if (base64Url !== imageUrl) {
         setImageUrl(base64Url);
       }
@@ -287,6 +306,7 @@ const MessageDetail = () => {
                   MessageTime,
                   IsSeen,
                   Image,
+                  imageLink: ImageBase64,
                 } = data;
                 SenderID === parseInt(id) &&
                   IsSeen === 0 &&
@@ -304,6 +324,7 @@ const MessageDetail = () => {
                       idParams: id,
                       IsSeen,
                       Image,
+                      ImageBase64,
                       keyIndex: `${MessageID}-${id}`,
                       handleDeleteMessage,
                     }}
@@ -326,7 +347,8 @@ const MessageDetail = () => {
               <LazyLoad>
                 <img
                   className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
-                  src={`${URL_BASE64}${imageUrl}`}
+                  src={`${imageUrl}`}
+                  onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
                   alt="sendImage"
                 />
               </LazyLoad>
@@ -368,7 +390,10 @@ const MessageDetail = () => {
 
               <div className="relative">
                 <input
-                  onChange={handleImageChange}
+                  onChange={(e) => {
+                    handleImageChange(e);
+                  }}
+                  value={imageUrl ? "" : ""}
                   type="file"
                   className="w-[32px] mobile:w-[20px] opacity-0 z-10 relative"
                 />

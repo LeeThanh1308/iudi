@@ -53,6 +53,8 @@ const GroupDetail = () => {
       : setPostList(newPosts);
   }, [posts]);
 
+  console.log(postList);
+
   const [modal, setModal] = useState({
     showModal: false,
     method: "post",
@@ -210,11 +212,8 @@ const GroupDetail = () => {
           )}
         </ul>
       </div>
-
       <NavMobile />
-
       <FormPost modal={modal} hiddenModal={handleHiddenModal} />
-
       <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
   );

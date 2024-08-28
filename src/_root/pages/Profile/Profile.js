@@ -274,7 +274,9 @@ function Profile() {
                   }
                 }
               >
-                <img src={Chat} alt="message" />
+                <LazyLoad>
+                  <img src={Chat} alt="message" />
+                </LazyLoad>
               </Link>
             </div>
             {/* 

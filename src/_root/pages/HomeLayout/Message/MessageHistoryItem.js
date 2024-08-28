@@ -25,7 +25,7 @@ const MessageHistoryItem = (props) => {
     isSeenMessage,
     Image,
   } = props.data;
-  console.log(props);
+  // console.log(props);
   return (
     <li
       style={

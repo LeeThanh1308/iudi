@@ -96,7 +96,12 @@ export const postMessage = createAsyncThunk(
   async (data) => {
     try {
       console.log(data);
-      const res = await socket.emit("send_message", data);
+      const { image, ...args } = data;
+      const res = await socket.emit("send_message", args);
+      if (image) {
+        console.log(image);
+      }
+      console.log(res);
     } catch (error) {
       console.log("error", error);
     }
