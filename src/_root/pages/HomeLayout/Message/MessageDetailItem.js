@@ -81,8 +81,8 @@ const MessageDetailItem = (props) => {
       {Content !== "" && Content !== null && (
         <div className="pb-3" data-mgs={keyIndex}>
           <div className="flex items-center justify-start gap-3 ">
-            <div>
-              <LazyLoad>
+            <div className="w-[40px] h-[40px]">
+              <LazyLoad className="w-[40px] h-[40px]">
                 <img
                   className="w-[40px] h-[40px] rounded-full object-cover"
                   src={`${OtherAvatar}`}

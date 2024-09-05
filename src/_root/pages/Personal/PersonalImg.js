@@ -100,7 +100,7 @@ const PersonalImg = () => {
   }, []);
 
   const listImg2 = showAllImages ? listImg : listImg.slice(0, 5);
-
+  console.log(listImg2, listImg);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex m-auto items-center gap-4">
@@ -146,9 +146,10 @@ const PersonalImg = () => {
               key={idImage}
             >
               <img
-                src={`${URL_BASE64}${imageUrl}`}
+                src={`${imageUrl}`}
                 alt=""
                 className=" w-full h-full object-cover"
+                onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
               />
 
               <button

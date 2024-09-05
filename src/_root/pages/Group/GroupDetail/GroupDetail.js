@@ -150,14 +150,15 @@ const GroupDetail = () => {
 
                 const handleSubmitComment = (e, imageUrl) => {
                   e.preventDefault();
+                  console.log(imageUrl);
                   const value = inputCommentRef.current.value;
                   if (value.trim() === "" && imageUrl === null) return;
-
                   const data = {
                     Content: value,
-                    PhotoURL: [imageUrl],
+                    PhotoURL: imageUrl,
                     ReplyID: null,
                   };
+
                   dispatch(postComment({ PostID, data, userID }));
                   inputCommentRef.current.value = "";
 

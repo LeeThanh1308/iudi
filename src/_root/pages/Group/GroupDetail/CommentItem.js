@@ -40,7 +40,7 @@ const CommentItem = (props) => {
       <div>
         <img
           className="w-[42px] h-[42px] object-cover rounded-full"
-          src={`${PhotoURL ? PhotoURL[0] : URL_BASE64 + Avatar}`}
+          src={`${Avatar}`}
           alt="avatar"
           onError={(e) => handleErrorImg(e.target)}
         />

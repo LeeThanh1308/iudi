@@ -70,7 +70,13 @@ export const addLikePost = createAsyncThunk(
   "posts/addLikePostStatus",
   async ({ postId, userID }) => {
     const res = await axios.post(
-      `${API__SERVER}/forum/favorite/${userID}/${postId}`
+      `${API__SERVER}/forum/favorite/${userID}/${postId}`,
+      JSON.stringify({ type: 1 }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 );
@@ -134,7 +140,12 @@ export const postComment = createAsyncThunk(
   async ({ PostID, data, userID }) => {
     const response = await axios.post(
       `${API__SERVER}/forum/add_comment/${userID}/${PostID}`,
-      data
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
   }
 );

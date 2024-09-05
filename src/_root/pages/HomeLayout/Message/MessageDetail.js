@@ -83,13 +83,13 @@ const MessageDetail = () => {
   }, [userID, id]);
 
   useEffect(() => {
-    if (onScrollBotton) {
-      messRef.current.scrollTop = messRef.current.scrollHeight;
+    // if (onScrollBotton) {
+    messRef.current.scrollTop = messRef.current.scrollHeight;
 
-      messRef.current.focus();
-      setOnScrollBotton((prev) => !prev);
-    }
-  }, [messages, onScrollBotton]);
+    messRef.current.focus();
+    setOnScrollBotton((prev) => !prev);
+    // }
+  }, [messages]);
 
   useEffect(() => {
     inputSendMessageRef.current.focus();

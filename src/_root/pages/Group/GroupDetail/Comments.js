@@ -13,6 +13,7 @@ const Comments = ({ comments }) => {
   const refIcondown = useRef();
   const [showEmoji, setShowEmoji] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const handleEmojiClick = (data) => {
     inputCommentRef.current.value += data.emoji;
@@ -29,12 +30,13 @@ const Comments = ({ comments }) => {
     reader.onloadend = () => {
       const base64Url = reader.result.split(",")[1];
       if (base64Url !== imageUrl) {
+        setImageFile(file);
         setImageUrl(base64Url);
       }
     };
   };
 
-  console.log(comentList)
+  console.log(comentList);
 
   return (
     <div id="comment-list" className="hidden duration-200" ref={commentRef}>
@@ -109,21 +111,20 @@ const Comments = ({ comments }) => {
       <div>
         <form
           onSubmit={(e) => {
-            onSubmitComment(e, imageUrl);
+            onSubmitComment(e, imageFile);
             setImageUrl(null);
+            setImageFile(null);
           }}
           className="flex mobile:border-[#deb887] items-center justify-center p-5 border bg-white text-black h-[60px] rounded-[20px] mt-5"
         >
           {imageUrl && (
             <div className="relative max-w-max">
-              <img
-                className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
-                src={`data:image/jpeg;base64,${imageUrl}`}
-                alt="sendImage"
-              />
               <button
                 className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm"
-                onClick={() => setImageUrl(null)}
+                onClick={() => {
+                  setImageUrl((prev) => (prev = null));
+                  setImageFile((prev) => (prev = null));
+                }}
               >
                 <IoIosCloseCircle />
               </button>
@@ -131,7 +132,7 @@ const Comments = ({ comments }) => {
           )}
 
           <input
-            className="w-full mr-5 focus-visible:outline-none"
+            className="w-full mr-5 focus-visible:outline-none bg-transparent"
             type="text"
             placeholder="Viết bình luận..."
             ref={inputCommentRef}

@@ -33,12 +33,14 @@ const ReplyItem = (props) => {
   return (
     <li className="flex gap-2 items-start mb-4">
       <div>
-        <img
-          className="w-[42px] h-[42px] object-cover rounded-full"
-          src={`${URL_BASE64}${Avatar}`}
-          alt="avatar"
-          onError={(e) => handleErrorImg(e.target)}
-        />
+        <LazyLoad>
+          <img
+            className="w-[42px] h-[42px] object-cover rounded-full"
+            src={`${Avatar}`}
+            alt="avatar"
+            onError={(e) => handleErrorImg(e.target)}
+          />
+        </LazyLoad>
       </div>
 
       <div>

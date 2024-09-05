@@ -13,6 +13,7 @@ const ReplyComment = ({ CommentID, PostID, ReplyList }) => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [value, setValue] = useState("");
+  const [imageFile, setImageFile] = useState("");
 
   const { userID } = new Auth();
 
@@ -33,6 +34,7 @@ const ReplyComment = ({ CommentID, PostID, ReplyList }) => {
     reader.onloadend = () => {
       const base64Url = reader.result.split(",")[1];
       if (base64Url !== imageUrl) {
+        setImageFile(file);
         setImageUrl(base64Url);
       }
     };
@@ -44,14 +46,14 @@ const ReplyComment = ({ CommentID, PostID, ReplyList }) => {
 
     const data = {
       Content: value,
-      PhotoURL: [imageUrl],
+      PhotoURL: imageFile,
       ReplyID: CommentID,
     };
     dispatch(postComment({ PostID, data, userID }));
     setValue("");
     setImageUrl(null);
+    setImageUrl(null);
   };
-
 
   return (
     <div className="duration-200">
@@ -119,7 +121,7 @@ const ReplyComment = ({ CommentID, PostID, ReplyList }) => {
           )}
 
           <input
-            className="w-full mr-5 focus-visible:outline-none text-[15px]"
+            className="w-full mr-5 focus-visible:outline-none text-[15px] bg-transparent"
             type="text"
             placeholder="Phản hồi..."
             value={value}
