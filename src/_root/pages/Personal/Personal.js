@@ -267,11 +267,13 @@ function Personal() {
               <>
                 <div className="flex items-end justify-center">
                   <LazyLoad>
-                    <img
-                      src={`${avatar}`}
-                      alt="personal"
-                      className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover"
-                    />
+                    <>
+                      <img
+                        src={`${avatar}`}
+                        alt="personal"
+                        className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover"
+                      />
+                    </>
                   </LazyLoad>
 
                   <label htmlFor="imageUpload" className="cursor-pointer">
@@ -365,12 +367,13 @@ function Personal() {
         <>
           <div className="flex items-end justify-center">
             <LazyLoad>
-              {" "}
-              <img
-                src={`${avatar}`}
-                alt="personal"
-                className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover"
-              />
+              <>
+                <img
+                  src={`${avatar}`}
+                  alt="personal"
+                  className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover"
+                />
+              </>
             </LazyLoad>
 
             <label htmlFor="imageUpload" className="cursor-pointer">

@@ -223,12 +223,14 @@ const MessageDetail = () => {
 
           <Link to={`/profile/${userName}`}>
             <LazyLoad>
-              <img
-                className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-                src={`${avatar}`}
-                alt="avatar default"
-                onError={(e) => handleErrorImg(e.target)}
-              />
+              <>
+                <img
+                  className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
+                  src={`${avatar}`}
+                  alt="avatar default"
+                  onError={(e) => handleErrorImg(e.target)}
+                />
+              </>
             </LazyLoad>
           </Link>
 
@@ -345,12 +347,14 @@ const MessageDetail = () => {
           {imageUrl && (
             <div className="relative max-w-max">
               <LazyLoad>
-                <img
-                  className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
-                  src={`${imageUrl}`}
-                  onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
-                  alt="sendImage"
-                />
+                <>
+                  <img
+                    className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
+                    src={`${imageUrl}`}
+                    onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
+                    alt="sendImage"
+                  />
+                </>
               </LazyLoad>
 
               <button

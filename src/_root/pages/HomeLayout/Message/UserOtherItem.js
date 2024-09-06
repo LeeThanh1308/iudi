@@ -20,12 +20,14 @@ const UserOtherItem = (props) => {
         }}
       >
         <LazyLoad>
-          <img
-            className=" mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-            src={`${avatar}`}
-            alt="avatar"
-            onError={(e) => handleErrorImg(e.target)}
-          />
+          <>
+            <img
+              className=" mx-auto w-[73px] h-[73px] tablet:w-[60px] tablet:h-[60px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
+              src={`${avatar}`}
+              alt="avatar"
+              onError={(e) => handleErrorImg(e.target)}
+            />
+          </>
         </LazyLoad>
         <h5 className="capitalize"> {username}</h5>
       </Link>

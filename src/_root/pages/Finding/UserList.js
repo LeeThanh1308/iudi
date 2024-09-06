@@ -128,12 +128,14 @@ const UserList = ({ users }) => {
 
                 <div className="mt-[-80px] z-[1] ipad:mt-[-50px]">
                   <LazyLoad>
-                    <img
-                      onError={(e) => handleErrorImg(e.target)}
-                      src={`${avatarLink}`}
-                      alt="avatar user"
-                      className="mx-auto ipad:w-[80px] ipad:h-[80px] text-white rounded-full h-[130px] w-[130px] object-cover  border-2 border-pink-100"
-                    />
+                    <>
+                      <img
+                        onError={(e) => handleErrorImg(e.target)}
+                        src={`${avatarLink}`}
+                        alt="avatar user"
+                        className="mx-auto ipad:w-[80px] ipad:h-[80px] text-white rounded-full h-[130px] w-[130px] object-cover  border-2 border-pink-100"
+                      />
+                    </>
                   </LazyLoad>
                 </div>
 

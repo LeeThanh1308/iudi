@@ -113,7 +113,7 @@ const PostItem = (props) => {
             <Link to={`/profile/${Username}`}>
               <img
                 className="w-[73px] h-[73px] rounded-full object-cover"
-                src={`${URL_BASE64}${Avatar}`}
+                src={`${Avatar}`}
                 alt="avatar other"
                 onError={(e) => handleErrorImg(e.target)}
               />
@@ -188,7 +188,7 @@ const PostItem = (props) => {
         </div>
 
         <div>
-          <div className="pl-5 pb-5">
+          <div className="px-5 pb-5 text-justify">
             <h2 className="capitalize text-lg">{Title}</h2>
             <p>{Content}</p>
           </div>
@@ -204,15 +204,17 @@ const PostItem = (props) => {
                 Photo.map((image) => (
                   <li
                     key={uuidv4()}
-                    className="col-span-1 max-h-[300px] overflow-hidden"
+                    className="col-span-1 h-auto overflow-hidden"
                   >
                     <LazyLoad>
-                      <img
-                        className="object-cover h-full w-full"
-                        src={`${image}`}
-                        alt={Title}
-                        onError={(e) => handleErrorImgPost(e.target)}
-                      />
+                      <>
+                        <img
+                          className="object-cover h-full w-full"
+                          src={`${image}`}
+                          alt={Title}
+                          onError={(e) => handleErrorImgPost(e.target)}
+                        />
+                      </>
                     </LazyLoad>
                   </li>
                 ))}
@@ -247,11 +249,13 @@ const PostItem = (props) => {
               }
             >
               <LazyLoad>
-                <img
-                  className="w-[20px] h-[20px] transition"
-                  src={btnlike}
-                  alt="like"
-                />
+                <>
+                  <img
+                    className="w-[20px] h-[20px] transition"
+                    src={btnlike}
+                    alt="like"
+                  />
+                </>
               </LazyLoad>
               {IsFavorited ? "Đã thích" : "Thích"}
             </button>

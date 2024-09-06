@@ -190,8 +190,8 @@ const Group = () => {
             <div>
               <div>
                 <img
-                  className="w-full object-cover max-h-[400px]"
-                  src={`${URL_BASE64}${avatarLink}`}
+                  className="w-full object-fill max-h-[400px]"
+                  src={`${avatarLink}`}
                   alt="slide group"
                   onError={(e) => handleErrorImgSlideGroup(e.target)}
                 />

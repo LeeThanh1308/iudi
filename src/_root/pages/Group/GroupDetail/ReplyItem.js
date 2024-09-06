@@ -34,12 +34,14 @@ const ReplyItem = (props) => {
     <li className="flex gap-2 items-start mb-4">
       <div>
         <LazyLoad>
-          <img
-            className="w-[42px] h-[42px] object-cover rounded-full"
-            src={`${Avatar}`}
-            alt="avatar"
-            onError={(e) => handleErrorImg(e.target)}
-          />
+          <>
+            <img
+              className="w-[42px] h-[42px] object-cover rounded-full"
+              src={`${Avatar}`}
+              alt="avatar"
+              onError={(e) => handleErrorImg(e.target)}
+            />
+          </>
         </LazyLoad>
       </div>
 
@@ -52,11 +54,13 @@ const ReplyItem = (props) => {
             </div>
             {PhotoURL?.length > 0 && (
               <LazyLoad>
-                <img
-                  className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
-                  src={`${PhotoURL[0]}`}
-                  alt="comment-image"
-                />
+                <>
+                  <img
+                    className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
+                    src={`${PhotoURL[0]}`}
+                    alt="comment-image"
+                  />
+                </>
               </LazyLoad>
             )}
           </div>

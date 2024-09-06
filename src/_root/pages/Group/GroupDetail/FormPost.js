@@ -230,7 +230,7 @@ const FormPost = (props) => {
               >
                 <img
                   className="object-cover object-center w-full h-full"
-                  src={`${URL_BASE64}${image}`}
+                  src={`${image}`}
                   alt="postImage"
                 />
 

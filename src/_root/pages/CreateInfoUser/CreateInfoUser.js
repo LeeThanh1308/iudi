@@ -79,7 +79,9 @@ const CreateInfoUser = () => {
         <div className="mx-auto">
           <div className="mt-[125px]">
             <LazyLoad>
-              <img className="mx-auto" src={Logo} alt="logo" />
+              <>
+                <img className="mx-auto" src={Logo} alt="logo" />
+              </>
             </LazyLoad>
           </div>
 

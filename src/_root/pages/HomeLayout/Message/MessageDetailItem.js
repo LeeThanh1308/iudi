@@ -58,12 +58,14 @@ const MessageDetailItem = (props) => {
               </button>
 
               <LazyLoad>
-                <img
-                  className="max-w-[250px] max-h-[150px] object-contain rounded"
-                  src={`${URL_BASE64 + ImageBase64}`}
-                  onError={(e) => (e.target.src = ImageBase64)}
-                  alt="sendImageBase64"
-                />
+                <>
+                  <img
+                    className="max-w-[250px] max-h-[150px] object-contain rounded"
+                    src={`${URL_BASE64 + ImageBase64}`}
+                    onError={(e) => (e.target.src = ImageBase64)}
+                    alt="sendImageBase64"
+                  />
+                </>
               </LazyLoad>
             </div>
 
@@ -83,12 +85,14 @@ const MessageDetailItem = (props) => {
           <div className="flex items-center justify-start gap-3 ">
             <div className="w-[40px] h-[40px]">
               <LazyLoad className="w-[40px] h-[40px]">
-                <img
-                  className="w-[40px] h-[40px] rounded-full object-cover"
-                  src={`${OtherAvatar}`}
-                  alt="avatar default"
-                  onError={(e) => handleErrorImg(e.target)}
-                />
+                <>
+                  <img
+                    className="w-[40px] h-[40px] rounded-full object-cover"
+                    src={`${OtherAvatar}`}
+                    alt="avatar default"
+                    onError={(e) => handleErrorImg(e.target)}
+                  />
+                </>
               </LazyLoad>
             </div>
 
@@ -117,23 +121,27 @@ const MessageDetailItem = (props) => {
           <div className="flex items-center justify-start gap-3 ">
             <div>
               <LazyLoad>
-                <img
-                  className="w-[40px] h-[40px] rounded-full object-cover"
-                  src={`${OtherAvatar}`}
-                  alt="avatar default"
-                  onError={(e) => handleErrorImg(e.target)}
-                />
+                <>
+                  <img
+                    className="w-[40px] h-[40px] rounded-full object-cover"
+                    src={`${OtherAvatar}`}
+                    alt="avatar default"
+                    onError={(e) => handleErrorImg(e.target)}
+                  />
+                </>
               </LazyLoad>
             </div>
 
             <div className="flex items-center gap-1 group">
               <LazyLoad>
-                <img
-                  className="max-w-[250px] max-h-[150px] object-contain rounded"
-                  src={`${URL_BASE64 + ImageBase64}`}
-                  onError={(e) => (e.target.src = ImageBase64)}
-                  alt="sendImage"
-                />
+                <>
+                  <img
+                    className="max-w-[250px] max-h-[150px] object-contain rounded"
+                    src={`${URL_BASE64 + ImageBase64}`}
+                    onError={(e) => (e.target.src = ImageBase64)}
+                    alt="sendImage"
+                  />
+                </>
               </LazyLoad>
               <button
                 type="button"

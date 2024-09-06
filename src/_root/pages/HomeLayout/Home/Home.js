@@ -67,7 +67,9 @@ const Home = () => {
         <div className="ipad:flex mt-4 justify-center hidden ">
           <Link to="/message">
             <LazyLoad>
-              <img src={Chat} alt="chat" />
+              <>
+                <img src={Chat} alt="chat" />
+              </>
             </LazyLoad>
           </Link>
         </div>
@@ -75,7 +77,9 @@ const Home = () => {
 
       <div className="bg-[rgba(255,255,255,0)] relative w-full min-h-screen hidden mobile:block">
         <LazyLoad>
-          <img src={Background} alt="bg" className="w-full" />
+          <>
+            <img src={Background} alt="bg" className="w-full" />
+          </>
         </LazyLoad>
         <div className="absolute top-0 left-0 pt-5 w-full">
           <Header4 />
@@ -102,11 +106,13 @@ const Home = () => {
 
             <Link to={`profile/${userName}`}>
               <LazyLoad>
-                <img
-                  src={star}
-                  alt="profile"
-                  className="block mx-auto mt-[10px] rounded-full p-[5px] shadow"
-                />
+                <>
+                  <img
+                    src={star}
+                    alt="profile"
+                    className="block mx-auto mt-[10px] rounded-full p-[5px] shadow"
+                  />
+                </>
               </LazyLoad>
             </Link>
           </div>

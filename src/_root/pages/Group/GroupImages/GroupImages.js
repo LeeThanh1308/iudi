@@ -8,6 +8,7 @@ import { postsSelector } from "../../../../service/redux/posts/postsSlice";
 import { handleErrorImgPost } from "../../../../service/utils/utils";
 
 import config from "../../../../configs/Configs.json";
+import LazyLoad from "react-lazy-load";
 const { URL_BASE64 } = config;
 
 const GroupImages = () => {
@@ -52,12 +53,16 @@ const GroupImages = () => {
                 {imageList2.map((image) => {
                   return (
                     <li key={uuidv4()} className="p-1">
-                      <img
-                        className="h-[150px] w-[150px] ipad:h-[70px] ipad:w-[70px] object-cover rounded"
-                        src={`${URL_BASE64}${image}`}
-                        alt="image"
-                        onError={(e) => handleErrorImgPost(e.target)}
-                      />
+                      <LazyLoad>
+                        <>
+                          <img
+                            className="h-[150px] w-[150px] ipad:h-[70px] ipad:w-[70px] object-cover rounded"
+                            src={`${image}`}
+                            alt="image"
+                            onError={(e) => handleErrorImgPost(e.target)}
+                          />
+                        </>
+                      </LazyLoad>
                     </li>
                   );
                 })}

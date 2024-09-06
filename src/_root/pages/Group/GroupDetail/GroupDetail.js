@@ -93,7 +93,7 @@ const GroupDetail = () => {
         <div className="flex gap-2 items-center">
           <img
             className="w-[73px] h-[73px] rounded-full object-cover"
-            src={`${URL_BASE64}${userState.user.avatarLink}`}
+            src={`${userState.user.avatarLink}`}
             alt="avatar user"
             onError={(e) => handleErrorImg(e.target)}
           />

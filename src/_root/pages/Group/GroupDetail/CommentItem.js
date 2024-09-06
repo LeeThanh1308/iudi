@@ -53,11 +53,13 @@ const CommentItem = (props) => {
             <p className="text-xs">{Content}</p>
             {PhotoURL?.length > 0 && (
               <LazyLoad>
-                <img
-                  className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
-                  src={`${PhotoURL[0]}`}
-                  alt="comment-image"
-                />
+                <>
+                  <img
+                    className="max-w-[250px] max-h-[150px] object-contain rounded mt-2"
+                    src={`${PhotoURL[0]}`}
+                    alt="comment-image"
+                  />
+                </>
               </LazyLoad>
             )}
           </div>

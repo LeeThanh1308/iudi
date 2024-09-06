@@ -68,12 +68,14 @@ const GroupItem = (props) => {
       >
         <div>
           <LazyLoad>
-            <img
-              alt={GroupName}
-              onError={(e) => handleErrorImgGroup(e.target)}
-              src={`${avatarLink}`}
-              className="w-[80px] h-[80px] ipad:w-[30px] ipad:h-[30px] rounded-full border-2 border-solid border-[#fdfdfd] object-cover"
-            />
+            <>
+              <img
+                alt={GroupName}
+                onError={(e) => handleErrorImgGroup(e.target)}
+                src={`${avatarLink}`}
+                className="w-[80px] h-[80px] ipad:w-[30px] ipad:h-[30px] rounded-full border-2 border-solid border-[#fdfdfd] object-cover"
+              />
+            </>
           </LazyLoad>
         </div>
 

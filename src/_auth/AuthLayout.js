@@ -42,7 +42,13 @@ const AuthLayout = () => {
         <Header1 />
         <div className="flex flex-col justify-center items-center mt-[100px] relative top-[-150px]">
           <LazyLoad>
-            <img src={Logo} alt="Your" className="w-[400px] tablet:w-[200px]" />
+            <>
+              <img
+                src={Logo}
+                alt="Your"
+                className="w-[400px] tablet:w-[200px]"
+              />
+            </>
           </LazyLoad>
           <h1 className="font-bold text-white text-7xl ipad:text-4xl tablet:text-4xl">
             Kết Nối Yêu Thương
@@ -50,16 +56,20 @@ const AuthLayout = () => {
           <div className="flex justify-center items-center mt-[30px]">
             <a href="#" className="">
               <LazyLoad>
-                <img src={appstore} alt="appstore" className="w-[200px]" />
+                <>
+                  <img src={appstore} alt="appstore" className="w-[200px]" />
+                </>
               </LazyLoad>
             </a>
             <a href="#" className="">
               <LazyLoad>
-                <img
-                  src={chplay}
-                  alt="chplay"
-                  className="w-[230px] h-[100px]"
-                />
+                <>
+                  <img
+                    src={chplay}
+                    alt="chplay"
+                    className="w-[230px] h-[100px]"
+                  />
+                </>
               </LazyLoad>
             </a>
           </div>
@@ -75,7 +85,9 @@ const AuthLayout = () => {
           <div className="absolute top-1/2 -translate-y-3/4 left-[10%]">
             <div>
               <LazyLoad>
-                <img src={Logo} alt="logo" />
+                <>
+                  <img src={Logo} alt="logo" />
+                </>
               </LazyLoad>
             </div>
             <h1 className="text-lg font-light text-white">

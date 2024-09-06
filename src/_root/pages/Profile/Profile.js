@@ -275,7 +275,9 @@ function Profile() {
                 }
               >
                 <LazyLoad>
-                  <img src={Chat} alt="message" />
+                  <>
+                    <img src={Chat} alt="message" />
+                  </>
                 </LazyLoad>
               </Link>
             </div>
@@ -333,12 +335,16 @@ function Profile() {
                         return (
                           <li key={PhotoID}>
                             <LazyLoad>
-                              <img
-                                onError={(e) => handleErrorImgProfile(e.target)}
-                                src={`${PhotoURL[0]}`}
-                                alt="profile"
-                                className="w-[80px] h-[80px] object-cover rounded-lg"
-                              />
+                              <>
+                                <img
+                                  onError={(e) =>
+                                    handleErrorImgProfile(e.target)
+                                  }
+                                  src={`${PhotoURL[0]}`}
+                                  alt="profile"
+                                  className="w-[80px] h-[80px] object-cover rounded-lg"
+                                />
+                              </>
                             </LazyLoad>
                           </li>
                         );
