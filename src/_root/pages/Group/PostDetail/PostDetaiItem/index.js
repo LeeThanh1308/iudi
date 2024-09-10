@@ -54,8 +54,10 @@ const PostDetailItem = () => {
     // setPostList(() => [
     //   { ...posts, comments: posts?.Posts?.listcomment ?? [] },
     // ]);
-    const { listcomment, ...args } = posts[0];
-    setPostList([{ ...args, comments: listcomment ?? [] }]);
+    if (posts[0]) {
+      const { listcomment, ...args } = posts[0] || {};
+      setPostList([{ ...args, comments: listcomment ?? [] }]);
+    }
     //     }
 
     //     if (index === posts.length - 1) setPostList(newPosts);
@@ -99,41 +101,6 @@ const PostDetailItem = () => {
 
   return (
     <div className="mobile:bg-[#ECECEC] mobile:min-h-screen mobile:pb-[100px]">
-      <div className="relative p-5 rounded-lg mobile:border-none mobile:rounded-none mobile:bg-white bg-[#222222] border border-solid border-[#4EC957]">
-        <div className="flex gap-2 items-center">
-          <img
-            className="w-[73px] h-[73px] rounded-full object-cover"
-            src={`${userState.user.avatarLink}`}
-            alt="avatar user"
-            onError={(e) => handleErrorImg(e.target)}
-          />
-          <button
-            type="button"
-            className="h-max"
-            onClick={() => handleShowModal("post", {})}
-            title="add post"
-          >
-            Hãy viết nên suy nghĩ của mình !
-          </button>
-        </div>
-
-        <div className="mt-3 flex justify-between">
-          <button
-            title="add post"
-            onClick={() => handleShowModal("post", {})}
-            type="button"
-            className="relative mobile:border mobile:border-[#deb887] mobile:bg-white bg-[#303030] py-2 px-5 rounded-[20px] flex gap-1 "
-          >
-            <img src={uploadFile} alt="upload file" />
-            <spa>Ảnh/Video</spa>
-          </button>
-
-          {/* <button type='submit' className='bg-[#4EC957] rounded-[20px]  py-2 px-5'>
-      Đăng
-     </button> */}
-        </div>
-      </div>
-
       <div>
         <ul>
           {postList.length > 0 ? (

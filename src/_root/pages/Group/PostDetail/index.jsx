@@ -233,7 +233,7 @@ const Group = () => {
             </div>
           </div>
 
-          <div className="grid 2xl:grid-cols-2 grid-cols-1 py-5 gap-3">
+          <div className="w-full py-5 gap-3">
             {postData ? (
               <PostDetailItem />
             ) : (
