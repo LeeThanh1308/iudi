@@ -28,7 +28,7 @@ const FormGroup = ({ data }) => {
       left: "50%",
       transform: "translate(-50%, -50%)",
 
-      width: "400px",
+      width: "80%",
       height: "max-content",
       background: "#1a1919",
       color: "white",
@@ -65,7 +65,7 @@ const FormGroup = ({ data }) => {
 
   const handleChangeUploadImage = (e) => {
     let file = e.target.files[0];
-    console.log(file);
+    // console.log(file);
     if (!file) return;
 
     const reader = new FileReader();
@@ -86,12 +86,12 @@ const FormGroup = ({ data }) => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
+      // console.log(data);
       const formData = new FormData();
       formData.append("GroupName", data.GroupName);
       formData.append("UserNumber", Number(data.userNumber));
       formData.append("avatarLink", inputFileImage.fileAvatar);
-      console.log(inputFileImage);
+      // console.log(inputFileImage);
       const res = await axios.post(
         `${API__SERVER}/forum/group/add_group/${userID}`,
         formData
@@ -106,7 +106,7 @@ const FormGroup = ({ data }) => {
         file: null,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error.message);
     }
   };
@@ -143,12 +143,17 @@ const FormGroup = ({ data }) => {
         </div>
 
         <div>
-          <input
-            className="mt-3 bg-transparent focus-visible:outline-none"
+          {/* <input
+            className="h-auto w-full"
             type="text"
             placeholder="Group name"
             {...register("GroupName")}
-          />
+          /> */}
+          <textarea
+            className="w-full mt-3 bg-transparent hover:bg-black"
+            placeholder="Group name"
+            {...register("GroupName")}
+          ></textarea>
           {errors.GroupName && (
             <p className="mt-2 text-sm ipad:mt-1 ipad:text-xs ipad:font-semibold tablet:mt-1 tablet:text-xs tablet:font-semibold font-bold text-red-500">
               {errors.GroupName.message}

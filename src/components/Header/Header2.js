@@ -22,7 +22,7 @@ const Header2 = (props) => {
   const headerRef = useRef();
 
   const { user, isToggleChangeUser } = useSelector(usersSelector);
-  console.log(user, isToggleChangeUser);
+  // console.log(user, isToggleChangeUser);
 
   const dispatch = useDispatch();
 

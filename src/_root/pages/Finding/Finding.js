@@ -33,13 +33,13 @@ function Finding() {
   }, [page]);
 
   const handleGetUsers = async (set, nextStep = 1) => {
-    console.log(set, nextStep);
+    // console.log(set, nextStep);
     const res = await axios.get(
       `https://api.iudi.xyz/api/location/${userID}/${
         set?.radius * 1000 || FINDING_DEFAULT
       }?page=${nextStep}`
     );
-    console.log(res);
+    // console.log(res);
 
     const data = res?.data?.Distances;
 

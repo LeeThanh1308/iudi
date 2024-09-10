@@ -31,7 +31,7 @@ const FormPost = (props) => {
       left: "50%",
       transform: "translate(-50%, -50%)",
 
-      width: "400px",
+      width: "80%",
       height: "max-content",
       background: "#1a1919",
       color: "white",
@@ -208,7 +208,8 @@ const FormPost = (props) => {
           type="text"
           id="textarea-post"
           placeholder="Nội dung"
-          className="min-h-[50px] my-3 bg-transparent w-full focus-visible:outline-none"
+          name="content"
+          className="min-h-[50px] my-3 bg-transparent w-full focus-visible:outline-none hover:border"
           {...register("content")}
         />
         {errors.content && (

@@ -58,7 +58,10 @@ function App() {
 
           <Route path="/group" element={<SideBarGroup />}></Route>
           <Route path="/group/:slug/:groupId" element={<Group />}></Route>
-          <Route path="/post" element={<PostDetail />}></Route>
+          <Route
+            path="/group/:slug/:groupId/posts/:postId"
+            element={<PostDetail />}
+          ></Route>
           <Route path="/finding" element={<Finding />} />
           <Route path="/finding/result" element={<FindingResult />} />
         </Route>

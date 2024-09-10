@@ -17,7 +17,7 @@ import Header1 from "../../../../components/Header/Header1";
 
 const { API__SERVER } = config;
 
-const SideBarGroup = ({ onLoading }) => {
+const SideBarGroup = ({ onLoading = () => null }) => {
   const [groupList, setGroupList] = useState([]);
   const [isChangeGroupList, setIsChangeGroupList] = useState(false);
   const { groupId } = useParams();
@@ -37,7 +37,7 @@ const SideBarGroup = ({ onLoading }) => {
         setGroupList(response.data.data);
         onLoading(true);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
       }
     };
 

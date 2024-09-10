@@ -8,52 +8,62 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
-  fetchPosts,
+  fetchDetailPost,
   postComment,
   postsSelector,
-} from "../../../../service/redux/posts/postsSlice";
-import { usersSelector } from "../../../../service/redux/users/usersSlice";
+} from "../../../../../service/redux/posts/postsSlice";
+import { usersSelector } from "../../../../../service/redux/users/usersSlice";
 
-import uploadFile from "../../../../images/icons/uploadFile.png";
+import uploadFile from "../../../../../images/icons/uploadFile.png";
 
-import config from "../../../../configs/Configs.json";
-import { Auth } from "../../../../service/utils/auth";
-import FormPost from "./FormPost";
-import PostItem from "./PostItem";
+import config from "../../../../../configs/Configs.json";
+import { Auth } from "../../../../../service/utils/auth";
+import FormPost from "../../GroupDetail/FormPost";
+import PostItem from "../../GroupDetail/PostItem";
 
-import NavMobile from "../../../../components/NavMobile/NavMobile";
-import { handleErrorImg } from "../../../../service/utils/utils";
+import NavMobile from "../../../../../components/NavMobile/NavMobile";
+import { handleErrorImg } from "../../../../../service/utils/utils";
 
 const { API__SERVER, URL_BASE64 } = config;
 
-const GroupDetail = () => {
+const PostDetailItem = () => {
   const { userID } = new Auth();
-  const { groupId } = useParams();
+  const { groupId, postId } = useParams();
   const [postList, setPostList] = useState([]);
 
-  const { posts, changeTogglePosts } = useSelector(postsSelector);
+  const { post: posts, changeTogglePosts } = useSelector(postsSelector);
   const userState = useSelector(usersSelector);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    groupId && userID && dispatch(fetchPosts({ groupId, userID }));
-  }, [changeTogglePosts, groupId]);
+    groupId && dispatch(fetchDetailPost({ groupId, postId }));
+  }, [changeTogglePosts, postId]);
 
   useEffect(() => {
-    const newPosts = [];
-    posts.length > 0
-      ? posts.forEach(async (post, index) => {
-          const comments = await getComments(post.PostID);
-          const newPost = { ...post, comments };
-          newPosts.push(newPost);
+    // const newPosts = [];
+    // posts.length > 0
+    //   ? posts.forEach(async (post, index) => {
+    //       if(userID) {
+    //         const comments = await getComments(post.PostID);
+    //         const newPost = { ...post, comments: comments ?? [] };
+    //         newPosts.push(newPost);
+    //       } else {
+    // const newPosts = ;
+    // newPosts.push(newPost);
+    // setPostList(() => [
+    //   { ...posts, comments: posts?.Posts?.listcomment ?? [] },
+    // ]);
+    const { listcomment, ...args } = posts[0];
+    setPostList([{ ...args, comments: listcomment ?? [] }]);
+    //     }
 
-          if (index === posts.length - 1) setPostList(newPosts);
-        })
-      : setPostList(newPosts);
+    //     if (index === posts.length - 1) setPostList(newPosts);
+    //   })
+    // : setPostList(newPosts);
   }, [posts]);
 
-  // console.log(postList);
+  console.log(postList);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -220,4 +230,4 @@ const GroupDetail = () => {
   );
 };
 
-export default GroupDetail;
+export default PostDetailItem;

@@ -48,7 +48,7 @@ const PersonalPrivate = () => {
 
       fetchProfile(userName);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

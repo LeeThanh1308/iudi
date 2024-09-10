@@ -62,7 +62,7 @@ const GroupItem = (props) => {
       }`}
     >
       <Link
-        state={{ avatarLink, groupName: GroupName }}
+        // state={{ avatarLink, groupName: GroupName }}
         to={`/group/${slugString(GroupName)}/${GroupID}`}
         className="flex flex-wrap gap-2 items-center"
       >

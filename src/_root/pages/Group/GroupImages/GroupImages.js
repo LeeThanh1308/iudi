@@ -23,7 +23,7 @@ const GroupImages = () => {
 
   const imageList2 = showAllImages ? imageList : imageList.slice(0, 8);
 
-  console.table({ showAllImages, imageList, postsState });
+  // console.table({ showAllImages, imageList, postsState });
   return (
     <div>
       {imageList.length > 0 ? (

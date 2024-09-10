@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { useParams, useLocation } from "react-router-dom";
@@ -24,7 +24,17 @@ const Group = () => {
   const [widthSidebar, setWidthSidebar] = useState(500);
   const [isLoadingSidebar, setIsLoadingSidebar] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [groupInfo, setGroupInfo] = useState({
+    avatarLink: "",
+    groupName: "",
+  });
+  const { avatarLink, GroupName: groupName } = groupInfo;
+  // get members from group
 
+  const { groupId } = useParams();
+  const { userID } = new Auth();
+
+  const [memberCount, setMemberCount] = useState(0);
   const sidebarRef = useRef();
 
   const backgroundImageStyle = {
@@ -49,9 +59,19 @@ const Group = () => {
     marginTop: `${heightHeader}px`,
   };
 
-  const { state } = useLocation();
-  const { avatarLink, groupName } = state;
+  // const { state } = useLocation()
 
+  useLayoutEffect(() => {
+    //Get info group
+    axios
+      .get(`https://api.iudi.xyz/api/detail_group/${groupId}/1`)
+      .then((res) => res.data)
+      .then((data) => {
+        console.log(data?.detailGroup);
+        setGroupInfo(data.detailGroup);
+      })
+      .catch(() => {});
+  }, [groupId]);
   useEffect(() => {
     setTimeout(() => {
       isLoadingSidebar && setWidthSidebar(sidebarRef?.current.offsetWidth);
@@ -68,13 +88,6 @@ const Group = () => {
         : setIsDark(false);
     };
   }, []);
-
-  // get members from group
-
-  const { groupId } = useParams();
-  const { userID } = new Auth();
-
-  const [memberCount, setMemberCount] = useState(0);
 
   const fetchMembersGroup = async (groupId) => {
     const res = await axios

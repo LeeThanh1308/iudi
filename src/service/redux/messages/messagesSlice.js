@@ -95,15 +95,15 @@ export const postMessage = createAsyncThunk(
   "messages/postMessageStatus",
   async (data) => {
     try {
-      console.log(data);
+      // console.log(data);
       const { image, ...args } = data;
       const res = await socket.emit("send_message", args);
       if (image) {
-        console.log(image);
+        // console.log(image);
       }
-      console.log(res);
+      // console.log(res);
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
     }
   }
 );
@@ -124,7 +124,7 @@ export const getRelationshipUsers = createAsyncThunk(
       const res = await axios.get(`${API__SERVER}/chatblock/${userID}`);
       return res.data.data;
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
     }
   }
 );
@@ -132,7 +132,7 @@ export const getRelationshipUsers = createAsyncThunk(
 export const deleteMessage = createAsyncThunk(
   "messages/deleteMessage",
   async ({ messageID, userID }) => {
-    console.log(messageID);
+    // console.log(messageID);
     const res = await fetch(`${API__SERVER}/chat/${userID}`, {
       method: "delete",
       headers: {
@@ -151,7 +151,7 @@ export const postSeenMessage = createAsyncThunk(
     try {
       const res = await socket.emit("seen", { MessageID: messageID });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 );

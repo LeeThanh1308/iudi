@@ -51,7 +51,7 @@ const PersonalImg = () => {
           .then(() => {
             dispatch(fetchProfile(userName));
           });
-        console.log("Image uploaded successfully:", response.data);
+        // console.log("Image uploaded successfully:", response.data);
 
         setimg(null);
         setIsChangeImage(false);
@@ -74,10 +74,10 @@ const PersonalImg = () => {
 
       getImageList();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
-    console.log("deleted image");
+    // console.log("deleted image");
   };
 
   const handleCancel = () => {
@@ -100,7 +100,7 @@ const PersonalImg = () => {
   }, []);
 
   const listImg2 = showAllImages ? listImg : listImg.slice(0, 5);
-  console.log(listImg2, listImg);
+  // console.log(listImg2, listImg);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex m-auto items-center gap-4">

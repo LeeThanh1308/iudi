@@ -26,6 +26,8 @@ import config from "../../../../configs/Configs.json";
 import {
   handleErrorImgPost,
   handleErrorImg,
+  handleHiddenText,
+  HandleHiddenText,
 } from "../../../../service/utils/utils";
 
 import { Auth } from "../../../../service/utils/auth";
@@ -120,50 +122,50 @@ const PostItem = (props) => {
             </Link>
             <div>
               <h3>{UserFullName}</h3>
-
-              <Moment fromNow>{`${UpdatePostAt}+0700`}</Moment>
+              <Link className=" hover:text-blue-500" to={`posts/${PostID}`}>
+                <Moment fromNow>{`${UpdatePostAt}+0700`}</Moment>
+              </Link>
             </div>
           </div>
 
-          <div className="h-max relative">
-            <button
-              className="text-[30px]"
-              type=""
-              onClick={(e) => {
-                const isHidden = btnRef.current.classList.contains("hidden");
-                if (isHidden) {
-                  btnRef.current.classList.remove("hidden");
-                  btnRef.current.classList.add("flex");
-                } else {
-                  btnRef.current.classList.add("hidden");
-                  btnRef.current.classList.remove("flex");
-                }
-              }}
-            >
-              <GoKebabHorizontal />
-            </button>
-            <div
-              ref={btnRef}
-              className={
-                "flex-col gap-2 hidden p-5 bg-[#222] min-w-[200px] mobile:bg-white mobile:shadow-[0px_0px_6px_#dddada] shadow-[0px_0px_8px_#000] absolute right-0 top-100 z-[10] rounded-md"
-              }
-            >
-              <div>
-                <button
-                  className="bg-[#363434] mobile:bg-[#008748] mobile:text-white p-1 rounded duration-200 mobile:hover:bg-[#008748ce] hover:bg-[#544e4e] flex gap-2 items-center w-full"
-                  onClick={() => {
-                    if (window.confirm("Are you sure you want to delete?"))
-                      dispatch(deletePost(PostID));
+          {isUpdate && (
+            <div className="h-max relative">
+              <button
+                className="text-[30px]"
+                type=""
+                onClick={(e) => {
+                  const isHidden = btnRef.current.classList.contains("hidden");
+                  if (isHidden) {
+                    btnRef.current.classList.remove("hidden");
+                    btnRef.current.classList.add("flex");
+                  } else {
                     btnRef.current.classList.add("hidden");
                     btnRef.current.classList.remove("flex");
-                  }}
-                  type="button"
-                >
-                  <MdDeleteForever /> Delete post
-                </button>
-              </div>
-
-              {isUpdate && (
+                  }
+                }}
+              >
+                <GoKebabHorizontal />
+              </button>
+              <div
+                ref={btnRef}
+                className={
+                  "flex-col gap-2 hidden p-5 bg-[#222] min-w-[200px] mobile:bg-white mobile:shadow-[0px_0px_6px_#dddada] shadow-[0px_0px_8px_#000] absolute right-0 top-100 z-[10] rounded-md"
+                }
+              >
+                <div>
+                  <button
+                    className="bg-[#363434] mobile:bg-[#008748] mobile:text-white p-1 rounded duration-200 mobile:hover:bg-[#008748ce] hover:bg-[#544e4e] flex gap-2 items-center w-full"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete?"))
+                        dispatch(deletePost(PostID));
+                      btnRef.current.classList.add("hidden");
+                      btnRef.current.classList.remove("flex");
+                    }}
+                    type="button"
+                  >
+                    <MdDeleteForever /> Delete post
+                  </button>
+                </div>
                 <div>
                   <button
                     className="bg-[#363434] mobile:bg-[#008748] mobile:text-white p-1 rounded duration-200 mobile:hover:bg-[#008748ce] hover:bg-[#544e4e] flex gap-2 items-center w-full"
@@ -182,15 +184,17 @@ const PostItem = (props) => {
                     <MdModeEditOutline /> Edit post
                   </button>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div>
           <div className="px-5 pb-5 text-justify">
-            <h2 className="capitalize text-lg">{Title}</h2>
-            <p>{Content}</p>
+            <h2 className="capitalize text-lg">
+              {<HandleHiddenText text={Title} length={50} />}
+            </h2>
+            <p>{<HandleHiddenText text={Content} length={70} />}</p>
           </div>
           {Photo.length > 0 && (
             <ul
@@ -242,11 +246,16 @@ const PostItem = (props) => {
             <button
               className="flex gap-1 mobile:border-[#deb887] mobile:border mobile:bg-white bg-[#303030] py-2 px-5 rounded-[20px] hover:opacity-70 hover:transition-[0.3s]"
               type="button"
-              onClick={() =>
+              onClick={() => {
                 dispatch(
-                  addLikePost({ postId: PostID, userID: UserID, type: 1 })
-                )
-              }
+                  addLikePost({
+                    postId: PostID,
+                    userID: userID,
+                    type: !IsFavorited,
+                  })
+                );
+                // console.log(UserID);
+              }}
             >
               <LazyLoad>
                 <>

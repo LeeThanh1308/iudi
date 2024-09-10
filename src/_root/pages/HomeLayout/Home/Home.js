@@ -49,7 +49,7 @@ const Home = () => {
           <div className="h-[60vh] ipad:h-[50vh] rounded-tl-[58px] rounded-bl-[58px] overflow-hidden">
             <img
               className="object-cover object-center w-full h-full"
-              src={`${URL_BASE64}${avatarLink}`}
+              src={`${avatarLink}`}
               alt="avatar user"
               onError={(e) => handleErrorImg(e.target)}
             />

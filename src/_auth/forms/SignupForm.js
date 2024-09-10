@@ -204,7 +204,7 @@ const SignupForm = () => {
   }, []);
 
   const handleSubmitForm = async (data) => {
-    console.log(data);
+    // console.log(data);
 
     if (isValid) {
       try {

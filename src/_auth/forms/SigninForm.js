@@ -51,8 +51,8 @@ function SigninForm() {
         );
         const user = response?.data?.user?.Users[0];
 
-        console.log("response:", response);
-        console.log("Phản hồi từ API:", response?.data);
+        // console.log("response:", response);
+        // console.log("Phản hồi từ API:", response?.data);
 
         localStorage.setItem("IuDiToken", response?.data?.jwt);
         localStorage.setItem("UserId", user?.UserID);

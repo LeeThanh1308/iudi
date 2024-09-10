@@ -36,7 +36,7 @@ const Comments = ({ comments }) => {
     };
   };
 
-  console.log(comentList);
+  // console.log(comentList);
 
   return (
     <div id="comment-list" className="hidden duration-200" ref={commentRef}>
