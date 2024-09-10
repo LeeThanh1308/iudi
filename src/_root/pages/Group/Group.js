@@ -28,6 +28,7 @@ const Group = () => {
     avatarLink: "",
     groupName: "",
   });
+  console.log(groupInfo);
   const { avatarLink, GroupName: groupName } = groupInfo;
   // get members from group
 
@@ -68,7 +69,9 @@ const Group = () => {
       .then((res) => res.data)
       .then((data) => {
         console.log(data?.detailGroup);
-        setGroupInfo(data.detailGroup);
+        if (data?.detailGroup) {
+          setGroupInfo(data.detailGroup);
+        }
       })
       .catch(() => {});
   }, [groupId]);
