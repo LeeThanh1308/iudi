@@ -56,23 +56,26 @@ export const HandleHiddenText = ({ text = "", length }) => {
 };
 
 export const handleSendToastify = (message) => {
+  console.log("Show toastify");
   webNotification.showNotification(
     "Iudi",
     {
       body: `${message ?? "Bạn vừa nhận được một tinh nhắn"}`,
       icon: "favicon.ico",
-      onClick: function onNotificationClicked() {},
-      autoClose: 4000, //auto close the notification after 4 seconds (you can manually close it via hide function)
+      onClick: function onNotificationClicked() {
+        window.open(window.location.origin, "_blank");
+      },
+      // autoClose: 4000, //auto close the notification after 4 seconds (you can manually close it via hide function)
     },
     function onShow(error, hide) {
       if (error) {
-        window.alert("Unable to show notification: " + error.message);
+        // window.alert("Unable to show notification: " + error.message);
       } else {
         console.log("Notification Shown.");
 
         setTimeout(function hideNotification() {
           console.log("Hiding notification....");
-          hide(); //manually close the notification (you can skip this if you use the autoClose option)
+          //manually close the notification (you can skip this if you use the autoClose option)
         }, 5000);
       }
     }

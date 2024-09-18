@@ -25,7 +25,10 @@ import callPhone from "../../../../images/icons/callphone.png";
 import callVideo from "../../../../images/icons/callvideo.png";
 
 import { Auth } from "../../../../service/utils/auth";
-import { handleErrorImg } from "../../../../service/utils/utils";
+import {
+  handleErrorImg,
+  handleSendToastify,
+} from "../../../../service/utils/utils";
 
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
@@ -37,6 +40,7 @@ const socket = io("https://api.iudi.xyz");
 
 const MessageDetail = () => {
   const { id } = useParams();
+  window.localStorage.setItem("ID_ROOM", id);
   const { userID } = new Auth();
 
   const location = useLocation();
@@ -67,16 +71,13 @@ const MessageDetail = () => {
     socket.emit("userId", { userId: userID });
 
     socket.on("check_message", (message) => {
-      const { ReceiverID, IsSeen, SenderID, ...args } = message.data;
-      console.table({ ReceiverID, IsSeen, SenderID, id, args });
+      const { ReceiverID, IsSeen, SenderID, Content } = message.data;
+      let ID_ROOM = window.localStorage.getItem("ID_ROOM");
+      // console.table({ ReceiverID, IsSeen, SenderID, id, args });
       dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
-      console.log(SenderID == Number(id), {
-        SenderID,
-        ReceiverID,
-        IsSeen,
-        userID,
-      });
-      if (SenderID == Number(id)) {
+      handleSendToastify(Content);
+      if (SenderID === Number(ID_ROOM)) {
+        // console.log()
         dispatch(
           fetchMessages({
             otherUserId: SenderID,
@@ -90,7 +91,9 @@ const MessageDetail = () => {
     });
 
     return () => {
-      socket.off("check_message");
+      socket.off("check_message", () => {
+        console.log("client disconnected check_message");
+      });
     };
   }, [userID, id]);
 

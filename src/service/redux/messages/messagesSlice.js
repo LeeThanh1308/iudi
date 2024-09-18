@@ -44,6 +44,10 @@ export const messagesSlice = createSlice({
         );
       }
     },
+    handleClearMessages: (state, action) => {
+      state.messages.data = [];
+      state.messages.info = {};
+    },
   },
 
   extraReducers: (builder) => {
@@ -155,5 +159,8 @@ export const postSeenMessage = createAsyncThunk(
   }
 );
 
-export const { handleUpdateDataMessage, handleGetHistoryMessage } =
-  messagesSlice.actions;
+export const {
+  handleUpdateDataMessage,
+  handleGetHistoryMessage,
+  handleClearMessages,
+} = messagesSlice.actions;

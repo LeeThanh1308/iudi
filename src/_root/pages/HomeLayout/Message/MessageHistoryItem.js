@@ -10,6 +10,7 @@ import LazyLoad from "react-lazy-load";
 import { useDispatch } from "react-redux";
 import {
   fetchHistoryMessages,
+  handleClearMessages,
   postSeenMessage,
 } from "../../../../service/redux/messages/messagesSlice";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ const { URL_BASE64, API__SERVER } = config;
 const MessageHistoryItem = (props) => {
   const { userID } = new Auth();
   const [totalNoSendMgs, setTotalNoSendMgs] = useState(0);
+  const [tongleOnline, setTongleOnline] = useState(false);
   const dispatch = useDispatch();
   const {
     Content,
@@ -40,7 +42,7 @@ const MessageHistoryItem = (props) => {
     if (!IsSeen?.readed) {
       axios
         .get(
-          `${API__SERVER}/pairmessage/${userID}?other_userId=${OtherUserID}&page=${1}&limit=${10}`
+          `${API__SERVER}/pairmessage/${userID}?other_userId=${OtherUserID}&page=${1}&limit=${50}`
         )
         .then((response) => response.data)
         .then((data) => {
@@ -64,6 +66,7 @@ const MessageHistoryItem = (props) => {
           : {}
       }
       onClick={async () => {
+        await dispatch(handleClearMessages());
         await dispatch(postSeenMessage(MessageID));
         await dispatch(fetchHistoryMessages(userID));
         setTotalNoSendMgs(0);

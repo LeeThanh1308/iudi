@@ -86,21 +86,17 @@ const Message = () => {
 
   useEffect(() => {
     // client connect to server
-    socket.emit("userId", { userId: userID });
+    // socket.emit("userId", { userId: userID });
 
-    socket.on("check_message", (message) => {
-      const { ReceiverID, IsSeen } = message.data;
-      dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
-    });
+    // socket.on("check_message", (message) => {
+    //   const { ReceiverID, IsSeen } = message.data;
+    //   dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
+    // });
 
     socket.on("online", (data) => {
       // console.log(data.user);
       setUserIdOtherList(data.user);
     });
-
-    return () => {
-      socket.off("check_message");
-    };
   }, [userID]);
 
   useEffect(() => {

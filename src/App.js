@@ -35,22 +35,35 @@ import SideBarGroup from "./_root/pages/Group/SidebarGroup/SideBarGroup.js";
 import FindingResult from "./_root/pages/Finding/FindingResult.js";
 import PostDetail from "./_root/pages/Group/PostDetail/index.jsx";
 import { Auth } from "./service/utils/auth.js";
-import { useDispatch, useSelector } from "react-redux";
-import { messagesSelector } from "./service/redux/messages/messagesSlice.js";
+import { useDispatch } from "react-redux";
+import {
+  fetchHistoryMessages,
+  messagesSelector,
+} from "./service/redux/messages/messagesSlice.js";
 import { handleSendToastify } from "./service/utils/utils.js";
 const socket = io("https://api.iudi.xyz");
 function App() {
+  const dispatch = useDispatch();
   const { userID } = new Auth();
   useEffect(() => {
     Notification.requestPermission();
     socket.emit("userId", { userId: userID });
     socket.on("check_message", (message) => {
-      const { Content } = message.data;
+      const { Content, ReceiverID, IsSeen } = message.data;
       console.log("Succeeded..." + Content);
       handleSendToastify(Content);
+      dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
     });
     // client connect to server
-  }, []);
+    return () => {
+      socket.off("check_message", () => {
+        console.log("client disconnected check_message");
+      });
+      socket.off("userId", () => {
+        console.log("client disconnected userId");
+      });
+    };
+  }, [userID]);
   return (
     <main>
       <Routes>
