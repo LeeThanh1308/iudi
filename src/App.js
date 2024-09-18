@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import "./App.css";
-
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,7 +26,7 @@ import Finding from "./_root/pages/Finding/Finding.js";
 import Setting from "./_root/pages/Setting/Setting.js";
 
 import Private from "./_root/pages/Setting/Private/Private.js";
-import Notification from "./_root/pages/Setting/Notification/Notification.js";
+// import Notification from "./_root/pages/Setting/Notification/Notification.js";
 import About from "./_root/pages/Setting/About/About.js";
 import Rules from "./_root/pages/Setting/Rules/Rules.js";
 import Security from "./_root/pages/Setting/Security/Security.js";
@@ -33,8 +34,23 @@ import SettingLayout from "./_root/pages/Setting/SettingLayout.js";
 import SideBarGroup from "./_root/pages/Group/SidebarGroup/SideBarGroup.js";
 import FindingResult from "./_root/pages/Finding/FindingResult.js";
 import PostDetail from "./_root/pages/Group/PostDetail/index.jsx";
-
+import { Auth } from "./service/utils/auth.js";
+import { useDispatch, useSelector } from "react-redux";
+import { messagesSelector } from "./service/redux/messages/messagesSlice.js";
+import { handleSendToastify } from "./service/utils/utils.js";
+const socket = io("https://api.iudi.xyz");
 function App() {
+  const { userID } = new Auth();
+  useEffect(() => {
+    Notification.requestPermission();
+    socket.emit("userId", { userId: userID });
+    socket.on("check_message", (message) => {
+      const { Content } = message.data;
+      console.log("Succeeded..." + Content);
+      handleSendToastify(Content);
+    });
+    // client connect to server
+  }, []);
   return (
     <main>
       <Routes>
@@ -69,7 +85,7 @@ function App() {
         <Route path="/setting" element={<SettingLayout />}>
           <Route index element={<Setting />} />
           <Route path="private" element={<Private />} />
-          <Route path="notifi" element={<Notification />} />
+          {/* <Route path="notifi" element={<Notification />} /> */}
           <Route path="rules" element={<Rules />} />
           <Route path="about" element={<About />} />
           <Route path="security" element={<Security />} />

@@ -95,7 +95,7 @@ export const postMessage = createAsyncThunk(
   "messages/postMessageStatus",
   async (data) => {
     try {
-      // console.log(data);
+      console.log(data);
       const { image, ...args } = data;
       const res = await socket.emit("send_message", args);
       if (image) {
@@ -112,7 +112,6 @@ export const fetchHistoryMessages = createAsyncThunk(
   "messages/fetchHistory",
   async (userID) => {
     const { data } = await axios.get(`${API__SERVER}/chat/${userID}`);
-
     return data.data;
   }
 );

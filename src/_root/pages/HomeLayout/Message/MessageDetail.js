@@ -56,6 +56,7 @@ const MessageDetail = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setEndHistory(false);
     dispatch(fetchMessages({ otherUserId: id, userID }));
   }, [id, postToggle]);
 
@@ -65,21 +66,32 @@ const MessageDetail = () => {
     // client connect to server
     socket.emit("userId", { userId: userID });
 
-    socket.on("check_message", async (message) => {
-      console.log(message.data);
-      const { ReceiverID, SenderID } = message.data;
-
-      // console.table({ReceiverID, SenderID, id});
-      // if (id === SenderID) {
-      await dispatch(
-        fetchMessages({ otherUserId: SenderID, userID: ReceiverID })
-      );
-      await dispatch(fetchHistoryMessages(ReceiverID));
-      setTimeout(() => {
-        setOnScrollBotton((prev) => !prev);
-      }, 500);
-      // }
+    socket.on("check_message", (message) => {
+      const { ReceiverID, IsSeen, SenderID, ...args } = message.data;
+      console.table({ ReceiverID, IsSeen, SenderID, id, args });
+      dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
+      console.log(SenderID == Number(id), {
+        SenderID,
+        ReceiverID,
+        IsSeen,
+        userID,
+      });
+      if (SenderID == Number(id)) {
+        dispatch(
+          fetchMessages({
+            otherUserId: SenderID,
+            userID: ReceiverID ?? IsSeen?.ReceiverID,
+          })
+        );
+        setTimeout(() => {
+          setOnScrollBotton((prev) => !prev);
+        }, 500);
+      }
     });
+
+    return () => {
+      socket.off("check_message");
+    };
   }, [userID, id]);
 
   useEffect(() => {

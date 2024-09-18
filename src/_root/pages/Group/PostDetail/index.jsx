@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 import Header3 from "../../../../components/Header/Header3";
 import background from "../../../../images/background.jpg";
@@ -49,29 +49,36 @@ const Group = () => {
 
   useLayoutEffect(() => {
     //Get info group
-
     axios
       .get(
         `https://api.iudi.xyz/api/forum/group/detail_post/${postId}/${groupId}`
       )
       .then((res) => res.data)
       .then((data) => {
-        console.log(data?.Posts);
         if (data?.status === 200) {
-          setPostData(data.Posts);
-        } else {
-          setPostData("");
+          if (!Array.isArray(data?.Posts) && data?.Posts) {
+            setPostData(data?.Posts);
+          } else {
+            toast.error(
+              data?.message || "Có lỗi sảy ra xin vui lòng thử lại sau."
+            );
+          }
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setPostData("");
+      });
     axios
       .get(`https://api.iudi.xyz/api/detail_group/${groupId}/1`)
       .then((res) => res.data)
       .then((data) => {
-        console.log(data?.detailGroup);
-        setGroupInfo(data.detailGroup);
+        if (data?.detailGroup) {
+          setGroupInfo(data.detailGroup);
+        }
       })
-      .catch(() => {});
+      .catch((data) => {
+        toast.error(data?.message || "Có lỗi sảy ra xin vui lòng thử lại sau.");
+      });
   }, [groupId, postId]);
   useEffect(() => {
     setTimeout(() => {
@@ -247,7 +254,9 @@ const Group = () => {
       </div>
 
       {/* mobile */}
-      <div className="hidden mobile:block"></div>
+      <div className="hidden mobile:block">
+        <PostDetailItem />
+      </div>
 
       <ToastContainer />
     </>

@@ -1,6 +1,8 @@
 import slugify from "react-slugify";
 import AVATAR_DEFAULT from "../../images/avatar-default.jpg";
 import config from "../../configs/Configs.json";
+import webNotification from "simple-web-notification";
+// import icon from "./favicon.ico";
 import { useState } from "react";
 
 const {
@@ -32,7 +34,7 @@ export const handleErrorImgSlideGroup = (element) => {
   element.src = `${IMAGE_SLIDE_GROUP_PLACEHOLDER}`;
 };
 
-export const HandleHiddenText = ({ text, length }) => {
+export const HandleHiddenText = ({ text = "", length }) => {
   const [showText, setShowText] = useState(false);
   return (
     <>
@@ -50,5 +52,29 @@ export const HandleHiddenText = ({ text, length }) => {
         text
       )}
     </>
+  );
+};
+
+export const handleSendToastify = (message) => {
+  webNotification.showNotification(
+    "Iudi",
+    {
+      body: `${message ?? "Bạn vừa nhận được một tinh nhắn"}`,
+      icon: "favicon.ico",
+      onClick: function onNotificationClicked() {},
+      autoClose: 4000, //auto close the notification after 4 seconds (you can manually close it via hide function)
+    },
+    function onShow(error, hide) {
+      if (error) {
+        window.alert("Unable to show notification: " + error.message);
+      } else {
+        console.log("Notification Shown.");
+
+        setTimeout(function hideNotification() {
+          console.log("Hiding notification....");
+          hide(); //manually close the notification (you can skip this if you use the autoClose option)
+        }, 5000);
+      }
+    }
   );
 };

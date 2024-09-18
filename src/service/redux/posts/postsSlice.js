@@ -74,9 +74,14 @@ export const fetchPosts = createAsyncThunk(
 export const fetchDetailPost = createAsyncThunk(
   "posts/fetchDetailPost",
   async ({ groupId, postId }) => {
-    const { data } = await axios.get(
-      `${API__SERVER}/forum/group/detail_post/${postId}/${groupId}`
-    );
+    const { data } = await axios
+      .get(`${API__SERVER}/forum/group/detail_post/${postId}/${groupId}`)
+      .catch((err) =>
+        toast.error(
+          err?.response?.data?.message ||
+            "Có lỗi sảy ra xin vui lòng thử lại sau."
+        )
+      );
     return data?.Posts;
   }
 );
@@ -95,7 +100,10 @@ export const addLikePost = createAsyncThunk(
         }
       )
       .catch((error) =>
-        toast.error(error ?? "Có lỗi sảy ra xin vui lòng thử lại sau.")
+        toast.error(
+          error?.response?.data?.message ??
+            "Có lỗi sảy ra xin vui lòng thử lại sau."
+        )
       );
   }
 );

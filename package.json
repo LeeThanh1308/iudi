@@ -43,6 +43,7 @@
     "react-slugify": "^3.0.3",
     "react-toastify": "^10.0.4",
     "redux": "^5.0.1",
+    "simple-web-notification": "^2.0.1",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.7.5",
     "sweetalert2": "^10.16.11",

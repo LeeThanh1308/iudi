@@ -90,7 +90,7 @@ const GroupItem = (props) => {
     //  onKeyPress={handleKeyPress}
     /> */}
 
-        <h3 className="text-[14px] ipad:text-[8px] bg-transparent outline-none">
+        <h3 className="text-[14px] ipad:text-[8px] bg-transparent outline-none text-white">
           {GroupName}
         </h3>
       </Link>

@@ -41,31 +41,11 @@ const PostDetailItem = () => {
   }, [changeTogglePosts, postId]);
 
   useEffect(() => {
-    // const newPosts = [];
-    // posts.length > 0
-    //   ? posts.forEach(async (post, index) => {
-    //       if(userID) {
-    //         const comments = await getComments(post.PostID);
-    //         const newPost = { ...post, comments: comments ?? [] };
-    //         newPosts.push(newPost);
-    //       } else {
-    // const newPosts = ;
-    // newPosts.push(newPost);
-    // setPostList(() => [
-    //   { ...posts, comments: posts?.Posts?.listcomment ?? [] },
-    // ]);
     if (posts[0]) {
       const { listcomment, ...args } = posts[0] || {};
       setPostList([{ ...args, comments: listcomment ?? [] }]);
     }
-    //     }
-
-    //     if (index === posts.length - 1) setPostList(newPosts);
-    //   })
-    // : setPostList(newPosts);
   }, [posts]);
-
-  console.log(postList);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -102,96 +82,98 @@ const PostDetailItem = () => {
   return (
     <div className="mobile:bg-[#ECECEC] mobile:min-h-screen mobile:pb-[100px]">
       <div>
-        <ul>
-          {postList.length > 0 ? (
-            postList.map(
-              ({
-                Content,
-                PhotoURL,
-                PostID,
-                UserFullName,
-                Avatar,
-                FavoriteCount,
-                FirstComment,
-                Title,
-                UpdatePostAt,
-                Photo,
-                IsFavorited,
-                comments,
-                Username,
-                UserID,
-              }) => {
-                const btnRef = React.createRef();
-                const commentRef = React.createRef();
-                const inputCommentRef = React.createRef();
+        {Array.isArray(posts) && posts.length > 0 && (
+          <ul>
+            {postList?.length > 0 ? (
+              postList?.map(
+                ({
+                  Content,
+                  PhotoURL,
+                  PostID,
+                  UserFullName,
+                  Avatar,
+                  FavoriteCount,
+                  FirstComment,
+                  Title,
+                  UpdatePostAt,
+                  Photo,
+                  IsFavorited,
+                  comments,
+                  Username,
+                  UserID,
+                }) => {
+                  const btnRef = React.createRef();
+                  const commentRef = React.createRef();
+                  const inputCommentRef = React.createRef();
 
-                const handleSubmitComment = (e, imageUrl) => {
-                  e.preventDefault();
-                  // console.log(imageUrl);
-                  const value = inputCommentRef.current.value;
-                  if (value.trim() === "" && imageUrl === null) return;
-                  const data = {
-                    Content: value,
-                    PhotoURL: imageUrl,
-                    ReplyID: null,
+                  const handleSubmitComment = (e, imageUrl) => {
+                    e.preventDefault();
+                    // console.log(imageUrl);
+                    const value = inputCommentRef.current.value;
+                    if (value.trim() === "" && imageUrl === null) return;
+                    const data = {
+                      Content: value,
+                      PhotoURL: imageUrl,
+                      ReplyID: null,
+                    };
+
+                    dispatch(postComment({ PostID, data, userID }));
+                    inputCommentRef.current.value = "";
+
+                    // console.log(data);
                   };
 
-                  dispatch(postComment({ PostID, data, userID }));
-                  inputCommentRef.current.value = "";
+                  const handleShowComments = () => {
+                    commentRef.current.classList.remove("hidden");
+                    inputCommentRef.current.focus();
+                  };
 
-                  // console.log(data);
-                };
+                  const imgAvatarRef = React.createRef();
+                  const imgPhotoRef = React.createRef();
 
-                const handleShowComments = () => {
-                  commentRef.current.classList.remove("hidden");
-                  inputCommentRef.current.focus();
-                };
-
-                const imgAvatarRef = React.createRef();
-                const imgPhotoRef = React.createRef();
-
-                return (
-                  <PostItem
-                    key={PostID}
-                    data={{
-                      Content,
-                      PhotoURL,
-                      PostID,
-                      UserFullName,
-                      Avatar,
-                      FavoriteCount,
-                      FirstComment,
-                      Title,
-                      UpdatePostAt,
-                      Photo,
-                      IsFavorited,
-                      comments,
-                      Username,
-                      UserID,
-                    }}
-                    handle={{
-                      imgAvatarRef,
-                      imgPhotoRef,
-                      btnRef,
-                      handleShowModal,
-                      handleShowComments,
-                      handleSubmitComment,
-                      inputCommentRef,
-                      commentRef,
-                    }}
-                  />
-                );
-              }
-            )
-          ) : (
-            <li className="mt-5 text-center">
-              <h2>KHÔNG CÓ BÀI VIẾT NÀO</h2>
-            </li>
-          )}
-        </ul>
+                  return (
+                    <PostItem
+                      key={PostID}
+                      data={{
+                        Content,
+                        PhotoURL,
+                        PostID,
+                        UserFullName,
+                        Avatar,
+                        FavoriteCount,
+                        FirstComment,
+                        Title,
+                        UpdatePostAt,
+                        Photo,
+                        IsFavorited,
+                        comments,
+                        Username,
+                        UserID,
+                      }}
+                      handle={{
+                        imgAvatarRef,
+                        imgPhotoRef,
+                        btnRef,
+                        handleShowModal,
+                        handleShowComments,
+                        handleSubmitComment,
+                        inputCommentRef,
+                        commentRef,
+                      }}
+                    />
+                  );
+                }
+              )
+            ) : (
+              <li className="mt-5 text-center">
+                <h2>KHÔNG CÓ BÀI VIẾT NÀO</h2>
+              </li>
+            )}
+          </ul>
+        )}
       </div>
       <NavMobile />
-      <FormPost modal={modal} hiddenModal={handleHiddenModal} />
+      {/* <FormPost modal={modal} hiddenModal={handleHiddenModal} /> */}
       <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
   );
