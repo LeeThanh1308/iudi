@@ -75,7 +75,7 @@ const MessageDetail = () => {
       let ID_ROOM = window.localStorage.getItem("ID_ROOM");
       // console.table({ ReceiverID, IsSeen, SenderID, id, args });
       dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
-      handleSendToastify(Content);
+      // handleSendToastify(Content);
       if (SenderID === Number(ID_ROOM)) {
         // console.log()
         dispatch(
@@ -164,6 +164,7 @@ const MessageDetail = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     // console.log(file);
     if (!file) return;
     // const formdata = new FormData();
@@ -173,6 +174,7 @@ const MessageDetail = () => {
     reader.readAsDataURL(file);
 
     reader.onloadend = () => {
+      console.log("DONE");
       const base64Url = reader.result;
       if (base64Url !== imageUrl) {
         setImageUrl(base64Url);
@@ -225,6 +227,7 @@ const MessageDetail = () => {
   };
 
   // console.log(dataSendMessage);
+  console.log(imageUrl, fileImage);
 
   return (
     <div className="pb-5 bg-white rounded-3xl h-full flex flex-col">
@@ -354,33 +357,32 @@ const MessageDetail = () => {
           : ""}
       </div>
 
-      <div>
+      <div className="relative flex flex-col justify-between mobile:p-3 ipad:p-2 tablet:p-3 p-5 m-3 border text-black mobile:rounded-[30px] rounded-[50px] border-solid border-[#4EC957]">
+        {imageUrl && (
+          <div className="relative max-w-max">
+            <LazyLoad>
+              <>
+                <img
+                  className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
+                  src={`${imageUrl}`}
+                  onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
+                  alt="sendImage"
+                />
+              </>
+            </LazyLoad>
+
+            <button
+              className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm"
+              onClick={() => setImageUrl(null)}
+            >
+              <IoIosCloseCircle />
+            </button>
+          </div>
+        )}
         <form
           onSubmit={handleSubmitForm}
-          className="relative flex flex-col justify-between mobile:p-3 ipad:p-2 tablet:p-3 p-5 m-3 border text-black mobile:rounded-[30px] rounded-[50px] border-solid border-[#4EC957]"
+          className="relative flex flex-col justify-between"
         >
-          {imageUrl && (
-            <div className="relative max-w-max">
-              <LazyLoad>
-                <>
-                  <img
-                    className="w-[50px] h-[50px] mobile:w-[30px] mobile:h-[30px] object-cover rounded duration-150"
-                    src={`${imageUrl}`}
-                    onError={(e) => (e.target.src = URL_BASE64 + imageUrl)}
-                    alt="sendImage"
-                  />
-                </>
-              </LazyLoad>
-
-              <button
-                className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm"
-                onClick={() => setImageUrl(null)}
-              >
-                <IoIosCloseCircle />
-              </button>
-            </div>
-          )}
-
           <div className="flex items-center justify-between">
             <input
               className="flex flex-1 mr-5 mobile:mr-2 mobile:max-w-[70%] mobile:flex-0 focus-visible:outline-none bg-[white] text-black"

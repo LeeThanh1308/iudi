@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import {
   fetchHistoryMessages,
   handleClearMessages,
+  handleChangeSeenMessages,
   postSeenMessage,
 } from "../../../../service/redux/messages/messagesSlice";
 import { useEffect, useState } from "react";
@@ -36,7 +37,7 @@ const MessageHistoryItem = (props) => {
     isSeenMessage,
     Image,
   } = props.data;
-  console.log(props);
+  // console.log(props);
   // console.table({ Content, isSeenMessage, IsSeen, SenderID, userID });
   useEffect(() => {
     if (!IsSeen?.readed) {
@@ -66,10 +67,24 @@ const MessageHistoryItem = (props) => {
           : {}
       }
       onClick={async () => {
-        await dispatch(handleClearMessages());
-        await dispatch(postSeenMessage(MessageID));
-        await dispatch(fetchHistoryMessages(userID));
-        setTotalNoSendMgs(0);
+        if (OtherUserID !== Number(idParams)) {
+          await dispatch(handleClearMessages());
+          setTotalNoSendMgs(0);
+          if (SenderID !== Number(userID) && !IsSeen?.readed) {
+            await dispatch(
+              handleChangeSeenMessages({
+                SenderID,
+                ReceiverID: IsSeen?.ReceiverID,
+              })
+            );
+            await dispatch(fetchHistoryMessages(userID));
+          }
+          // if (!IsSeen?.readed) {
+          // await dispatch(postSeenMessage(MessageID));
+          // await dispatch(fetchHistoryMessages(userID));
+          // setTotalNoSendMgs(0);
+          // }
+        }
       }}
     >
       <Link

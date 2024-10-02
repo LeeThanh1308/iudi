@@ -21,6 +21,7 @@ const { URL_BASE64, API__SERVER } = config;
 
 const Group = () => {
   const [heightHeader, setHeightHeader] = useState(100);
+  const [page, setPage] = useState(1);
   const [widthSidebar, setWidthSidebar] = useState(500);
   const [isLoadingSidebar, setIsLoadingSidebar] = useState(false);
   const [isDark, setIsDark] = useState(false);

@@ -57,7 +57,7 @@ const GroupItem = (props) => {
   return (
     <li
       key={GroupID}
-      className={`relative mb-3 group hover:bg-[#00000033] rounded-xl p-2 ${
+      className={`relative mb-3 group w-full hover:bg-[#00000033] rounded-xl p-2 ${
         GroupID === parseInt(idParams) && "bg-[#00000033]"
       }`}
     >
@@ -73,7 +73,7 @@ const GroupItem = (props) => {
                 alt={GroupName}
                 onError={(e) => handleErrorImgGroup(e.target)}
                 src={`${avatarLink}`}
-                className="w-[80px] h-[80px] ipad:w-[30px] ipad:h-[30px] rounded-full border-2 border-solid border-[#fdfdfd] object-cover"
+                className="w-[60px] h-[60px] ipad:w-[30px] ipad:h-[30px] rounded-full border-2 border-solid border-[#fdfdfd] object-cover"
               />
             </>
           </LazyLoad>

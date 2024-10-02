@@ -17,6 +17,7 @@ const initialState = {
   postToggle: false,
   historyMessages: [],
   isSeenMessage: false,
+  toTotalNoSendMessage: 0,
 };
 
 export const messagesSlice = createSlice({
@@ -56,7 +57,8 @@ export const messagesSlice = createSlice({
         state.messages = action.payload;
       })
       .addCase(fetchHistoryMessages.fulfilled, (state, action) => {
-        state.historyMessages = action.payload;
+        state.historyMessages = action?.payload?.data ?? [];
+        state.toTotalNoSendMessage = action?.payload?.message_no_send ?? 0;
       })
       .addCase(postMessage.fulfilled, (state, action) => {
         // const { userID } = new Auth();
@@ -73,7 +75,10 @@ export const messagesSlice = createSlice({
       .addCase(postSeenMessage.fulfilled, (state, action) => {
         state.isSeenMessage = true;
       })
-      .addCase(getRelationshipUsers.fulfilled, (state, action) => {});
+      .addCase(getRelationshipUsers.fulfilled, (state, action) => {})
+      .addCase(handleChangeSeenMessages.fulfilled, (state, action) => {
+        // state.postToggle = action.payload;
+      });
   },
 });
 
@@ -116,7 +121,13 @@ export const fetchHistoryMessages = createAsyncThunk(
   "messages/fetchHistory",
   async (userID) => {
     const { data } = await axios.get(`${API__SERVER}/chat/${userID}`);
-    return data.data;
+
+    // console.log(list_message_no_read);
+    return {
+      data: data.data,
+      message_no_send:
+        data.list_message_no_read?.all_message_user_receiver_no_read ?? 0,
+    };
   }
 );
 
@@ -156,6 +167,18 @@ export const postSeenMessage = createAsyncThunk(
     } catch (error) {
       // console.log(error);
     }
+  }
+);
+
+export const handleChangeSeenMessages = createAsyncThunk(
+  "messages/hanldeChangeSeenMessageAll",
+  async ({ SenderID, ReceiverID }) => {
+    console.log(SenderID, ReceiverID);
+    const response = await axios
+      .post(`${API__SERVER}/message/mark_as_read`, { SenderID, ReceiverID })
+      .then(() => true)
+      .catch(() => false);
+    return response.data;
   }
 );
 

@@ -62,7 +62,7 @@ const SideBarGroup = ({ onLoading = () => null }) => {
     setIsChangeGroupList((prevState) => !prevState);
 
   return (
-    <div className="text-white mobile:text-black lg:text-[16px] sm:text-[12px] text-[14px] ">
+    <div className="text-white mobile:text-black lg:text-[16px] sm:text-[12px] text-[14px] w-full">
       {/* <Header1 /> */}
       <div className="flex items-center gap-2 mobile:hidden p-2">
         <button title="add group" onClick={handleShowModal}>

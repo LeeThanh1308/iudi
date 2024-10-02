@@ -25,20 +25,34 @@ const UserList = ({ users }) => {
   const settings = {
     arrows: true,
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    rows: 2,
+    slidesToShow: 5,
+    slidesToScroll: 5,
 
     dotsClass: "dost-slider-custom",
 
     responsive: [
       {
-        breakpoint: 800,
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 480,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          dots: false,
         },
       },
     ],
@@ -60,20 +74,24 @@ const UserList = ({ users }) => {
 
   return (
     <Slider {...settings}>
+      {/* <div className=" w-full h-screen bg-black"></div> */}
       {users.map(
-        ({
-          UserID,
-          avatarLink,
-          PhotoURL,
-          FullName,
-          Distance,
-          Bio,
-          Phone,
-          Email,
-          BirthDate,
-          BirthPlace,
-          CurrentAdd,
-        }) => {
+        (
+          {
+            UserID,
+            avatarLink,
+            PhotoURL,
+            FullName,
+            Distance,
+            Bio,
+            Phone,
+            Email,
+            BirthDate,
+            BirthPlace,
+            CurrentAdd,
+          },
+          index
+        ) => {
           const dataUser = [
             {
               id: 1,
@@ -117,73 +135,61 @@ const UserList = ({ users }) => {
           ];
 
           return (
-            <div className="flex items-center justify-center py-3" key={UserID}>
-              <div className="bg-white mx-auto rounded-[30px] ipad:max-w-[360px] w-[550px] overflow-hidden border-2  border-[#4EC957]">
-                <div
-                  style={{
-                    background: `center/cover no-repeat  url(${bgProfile})`,
-                  }}
-                  className="w-full h-[150px] ipad:h-[110px]"
-                ></div>
-
-                <div className="mt-[-80px] z-[1] ipad:mt-[-50px]">
-                  <LazyLoad>
-                    <>
-                      <img
-                        onError={(e) => handleErrorImg(e.target)}
-                        src={`${avatarLink}`}
-                        alt="avatar user"
-                        className="mx-auto ipad:w-[80px] ipad:h-[80px] text-white rounded-full h-[130px] w-[130px] object-cover  border-2 border-pink-100"
-                      />
-                    </>
-                  </LazyLoad>
-                </div>
-
-                <div className="px-[50px] pb-5 ipad:p-3">
-                  <div className="text-center mt-5">
-                    <h4 className="mx-auto font-inter leading-tight font-bold text-[40px] capitalize ipad:text-[30px]">
-                      {FullName}
-                    </h4>
-
-                    <p
-                      className="mb-2 text-[25px] italic text-[#8E8E8E] ipad:text-[16px]"
-                      style={{
-                        overflowWrap: "break-word",
-                      }}
-                    >
+            <div className={`z-0 h-[40vh] p-2 overflow-hidden`} key={UserID}>
+              <div className="z-10 h-full w-full rounded-xl overflow-hidden shadow-md shadow-red-500">
+                <div className=" h-1/4 w-full overflow-hidden relative flex justify-start items-center px-2">
+                  <div className=" w-1/6 aspect-square rounded-full overflow-hidden shadow shadow-white bg-white text-white shrink-0 m-2">
+                    <LazyLoad>
+                      <>
+                        <img
+                          src={avatarLink}
+                          alt="avatar"
+                          className=" w-full h-full object-cover"
+                        />
+                      </>
+                    </LazyLoad>
+                  </div>
+                  <div className=" mt-3 w-auto overflow-hidden">
+                    <h1 className=" text-xl font-bold">{FullName}</h1>
+                    <p className="mb-2 text-xs limit-text text-justify">
                       {Bio}
                     </p>
                   </div>
-
-                  <ul className="flex flex-col gap-4 mt-[30px] ipad:gap-2 ipad:mt-[20px]">
-                    {dataUser.map(({ id, name, icon }) => {
-                      if (name) {
-                        return (
-                          <li key={id} className="flex gap-5 items-center">
-                            <div className="text-2xl ipad:text-xl">{icon}</div>
-                            <p className="text-xl ipad:text-lg">{name}</p>
-                          </li>
-                        );
-                      }
-                    })}
-                  </ul>
-
-                  <div className="flex justify-center gap-5 mb-5 mt-[50px] ipad:my-3">
+                </div>
+                <div className=" h-3/4 w-full bg-white m-3 flex flex-col justify-between items-center rounded-tl-lg">
+                  <div className="h-full p-3 w-full text-md overflow-hidden flex flex-col  items-start justify-between">
                     <div>
-                      <button
-                        className="py-4 ipad:p-3 ipad:text-lg ipad:rounded-xl text-xl px-5 font-bold text-white bg-[#50C759] rounded-[20px] hover:bg-[#1e5f24] duration-200"
-                        onClick={() => {
-                          navigate(`/message/${UserID}`, {
-                            state: {
-                              userName: FullName,
-                              isOnline: true,
-                              avatar: avatarLink,
-                            },
-                          });
-                        }}
-                      >
-                        Nhắn tin
-                      </button>
+                      <ul className="flex flex-col">
+                        {dataUser.map(({ id, name, icon }) => {
+                          if (name) {
+                            return (
+                              <li key={id} className="flex items-center">
+                                <div className="mr-1 text-red-400">{icon}</div>
+                                <p className="">{name}</p>
+                              </li>
+                            );
+                          }
+                        })}
+                      </ul>
+                    </div>
+
+                    <div className="mx-auto mb-3">
+                      <div>
+                        <button
+                          className="font-bold text-white bg-[#50C759] rounded-[20px] hover:bg-[#1e5f24] duration-200 px-3 py-2"
+                          onClick={() => {
+                            navigate(`/message/${UserID}`, {
+                              state: {
+                                userName: FullName,
+                                isOnline: true,
+                                avatar: avatarLink,
+                              },
+                            });
+                          }}
+                        >
+                          Nhắn tin
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

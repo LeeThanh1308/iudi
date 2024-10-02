@@ -34,23 +34,29 @@ import SettingLayout from "./_root/pages/Setting/SettingLayout.js";
 import SideBarGroup from "./_root/pages/Group/SidebarGroup/SideBarGroup.js";
 import FindingResult from "./_root/pages/Finding/FindingResult.js";
 import PostDetail from "./_root/pages/Group/PostDetail/index.jsx";
+import Group2 from "./_root/pages/Group2/index.js";
 import { Auth } from "./service/utils/auth.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchHistoryMessages,
   messagesSelector,
 } from "./service/redux/messages/messagesSlice.js";
 import { handleSendToastify } from "./service/utils/utils.js";
+import Posts from "./_root/pages/Group2/Posts/index.js";
+import DetailPost from "./_root/pages/Group2/DetailPost/index.js";
 const socket = io("https://api.iudi.xyz");
 function App() {
   const dispatch = useDispatch();
   const { userID } = new Auth();
+
   useEffect(() => {
     Notification.requestPermission();
+
     socket.emit("userId", { userId: userID });
     socket.on("check_message", (message) => {
       const { Content, ReceiverID, IsSeen } = message.data;
-      console.log("Succeeded..." + Content);
+
+      console.log("Succeeded..." + Content, message);
       handleSendToastify(Content);
       dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
     });
@@ -74,6 +80,14 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
+        <Route path="group" element={<Group2 />}>
+          <Route path=":slug/:groupId" element={<Posts />} />
+          <Route
+            path=":slug/:groupId/threads/:slug/:threadID"
+            element={<DetailPost />}
+          />
+        </Route>
+
         {/* private routes */}
         <Route element={<HomeLayout />}>
           <Route exact index element={<Home />} />
@@ -84,13 +98,12 @@ function App() {
         <Route element={<RootLayout />}>
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/personal" element={<Personal />} />
-
-          <Route path="/group" element={<SideBarGroup />}></Route>
-          <Route path="/group/:slug/:groupId" element={<Group />}></Route>
+          <Route path="/group2" element={<SideBarGroup />}></Route>
+          <Route path="/group2/:slug/:groupId" element={<Group />}></Route>
           <Route
             path="/group/:slug/:groupId/posts/:postId"
             element={<PostDetail />}
-          ></Route>
+          ></Route>{" "}
           <Route path="/finding" element={<Finding />} />
           <Route path="/finding/result" element={<FindingResult />} />
         </Route>

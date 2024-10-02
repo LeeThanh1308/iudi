@@ -10,7 +10,10 @@ const initialState = {
   posts: [],
   post: [],
   loading: "idle",
+  totalPage: 0,
+  totalPost: 0,
   changeTogglePosts: false,
+  changeTogglePost: false,
 };
 
 export const postsSlice = createSlice({
@@ -21,7 +24,9 @@ export const postsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.posts = action?.payload;
+        state.posts = action?.payload?.list_posts;
+        state.totalPage = action?.payload?.total_page;
+        state.totalPost = action?.payload?.total_post;
         state.loading = "successed";
       })
       .addCase(fetchDetailPost.fulfilled, (state, action) => {
@@ -33,6 +38,7 @@ export const postsSlice = createSlice({
       })
       .addCase(addLikePost.fulfilled, (state, action) => {
         state.changeTogglePosts = !state?.changeTogglePosts;
+        state.changeTogglePost = !state.changeTogglePost;
       })
       .addCase(addPost.fulfilled, (state, action) => {
         if (action.payload) state.changeTogglePosts = !state?.changeTogglePosts;
@@ -42,12 +48,15 @@ export const postsSlice = createSlice({
       })
       .addCase(postComment.fulfilled, (state, action) => {
         state.changeTogglePosts = !state?.changeTogglePosts;
+        state.changeTogglePost = !state?.changeTogglePost;
       })
       .addCase(likeUnlikeComment.fulfilled, (state, action) => {
         state.changeTogglePosts = !state?.changeTogglePosts;
+        state.changeTogglePost = !state?.changeTogglePost;
       })
       .addCase(removeComment.fulfilled, (state, action) => {
         state.changeTogglePosts = !state?.changeTogglePosts;
+        state.changeTogglePost = !state?.changeTogglePost;
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         state.changeTogglePosts = !state?.changeTogglePosts;
@@ -62,12 +71,12 @@ export const postsReducer = postsSlice.reducer;
 
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPostStatus",
-  async ({ groupId, userID }) => {
+  async ({ groupId, userID, page = 1, limit = 10 }) => {
     const { data } = await axios.get(
-      `${API__SERVER}/forum/group/${groupId}/1/10/${userID}`
+      `${API__SERVER}/forum/group/${groupId}/${page}/${limit}/${userID}`
     );
 
-    return data.list_posts;
+    return data;
   }
 );
 
@@ -76,12 +85,7 @@ export const fetchDetailPost = createAsyncThunk(
   async ({ groupId, postId }) => {
     const { data } = await axios
       .get(`${API__SERVER}/forum/group/detail_post/${postId}/${groupId}`)
-      .catch((err) =>
-        toast.error(
-          err?.response?.data?.message ||
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        )
-      );
+      .catch((err) => toast.error("Có lỗi sảy ra xin vui lòng thử lại sau."));
     return data?.Posts;
   }
 );
@@ -99,12 +103,7 @@ export const addLikePost = createAsyncThunk(
           },
         }
       )
-      .catch((error) =>
-        toast.error(
-          error?.response?.data?.message ??
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        )
-      );
+      .catch((error) => toast.error("Có lỗi sảy ra xin vui lòng thử lại sau."));
   }
 );
 
@@ -122,10 +121,7 @@ export const addPost = createAsyncThunk(
         return true;
       })
       .catch((error) => {
-        toast.error(
-          error?.response?.data?.message ??
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        );
+        toast.error("Có lỗi sảy ra xin vui lòng thử lại sau.");
         return false;
       });
     return response;
@@ -143,10 +139,7 @@ export const patchPost = createAsyncThunk(
 
       toast.success("Post updated successfully!");
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message ??
-          "Có lỗi sảy ra xin vui lòng thử lại sau."
-      );
+      toast.error("Có lỗi sảy ra xin vui lòng thử lại sau.");
     }
   }
 );
@@ -155,16 +148,12 @@ export const deletePost = createAsyncThunk(
   "posts/deletePostStatus",
   async (postID) => {
     try {
-      const response = await axios.delete(
-        `${API__SERVER}/forum/delete_post/${postID}`
-      );
-
-      toast.success("Post deleted successfully!");
+      const response = await axios
+        .delete(`${API__SERVER}/forum/delete_post/${postID}`)
+        .then(() => toast.success("Post deleted successfully!"))
+        .catch(() => toast.error("Error deleting post!"));
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message ??
-          "Có lỗi sảy ra xin vui lòng thử lại sau."
-      );
+      toast.error("Có lỗi sảy ra xin vui lòng thử lại sau.");
     }
   }
 );
@@ -181,10 +170,7 @@ export const postComment = createAsyncThunk(
         },
       })
       .catch((error) => {
-        toast.error(
-          error?.response?.data?.message ??
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        );
+        toast.error("Có lỗi sảy ra xin vui lòng thử lại sau.");
       });
   }
 );
@@ -194,12 +180,7 @@ export const likeUnlikeComment = createAsyncThunk(
   async ({ commentID, userID }) => {
     const response = await axios
       .post(`${API__SERVER}/forum/comment/favorite/${userID}/${commentID}`)
-      .catch((error) =>
-        toast.error(
-          error?.response?.data?.message ??
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        )
-      );
+      .catch((error) => toast.error("Có lỗi sảy ra xin vui lòng thử lại sau."));
     return response.status === 200 ? true : false;
   }
 );
@@ -209,11 +190,6 @@ export const removeComment = createAsyncThunk(
   async (commentID) => {
     const response = await axios
       .delete(`${API__SERVER}/forum/comment/remove/${commentID}`)
-      .catch((error) =>
-        toast.error(
-          error?.response?.data?.message ??
-            "Có lỗi sảy ra xin vui lòng thử lại sau."
-        )
-      );
+      .catch((error) => toast.error("Có lỗi sảy ra xin vui lòng thử lại sau."));
   }
 );
