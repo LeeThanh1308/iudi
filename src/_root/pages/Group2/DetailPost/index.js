@@ -43,6 +43,7 @@ function DetailPost() {
   );
   const { userID } = new Auth();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(30);
   const [listComment, setListComment] = useState([]);
   const [imageBase64s, setImageBase64s] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
@@ -153,10 +154,11 @@ function DetailPost() {
     (async (PostID, UserID, groupId) => {
       await dispatch(fetchDetailPost({ groupId, postId: threadID }));
       const { data } = await axios
-        .get(`${API__SERVER}/forum/comment/${PostID}/${UserID}`)
+        .get(`${API__SERVER}/forum/comment/${PostID}/${UserID}?page=${page}`)
         .catch(() => toast.error("Get list of comments failed!"));
       if (Array.isArray(data?.Comments) && data?.Comments.length > 0) {
         setListComment(data?.Comments);
+        setLimit(data?.total_page);
       }
     })(threadID, userID, groupId);
     setIsShowFormComment(false);
@@ -639,7 +641,10 @@ function DetailPost() {
                             )
                           )}
 
-                          <button className="flex-1 h-full aspect-square text-blue-500 bg-white hover:shadow-sm my-auto text-xl rounded-r-full hover:bg-blue-500 hover:text-white flex items-center justify-center">
+                          <button
+                            //  onClick={}
+                            className="flex-1 h-full aspect-square text-blue-500 bg-white hover:shadow-sm my-auto text-xl rounded-r-full hover:bg-blue-500 hover:text-white flex items-center justify-center"
+                          >
                             <GrSend />
                           </button>
                         </div>
