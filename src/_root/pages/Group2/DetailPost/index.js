@@ -110,6 +110,29 @@ function DetailPost() {
     };
   };
 
+  const handleSubmitSendSubComment = async (commentID) => {
+    if (commentID) {
+      if (dataThisComment[commentID]?.Content) {
+        const formData = new FormData();
+        formData.append("Content", dataThisComment[commentID]?.Content);
+        formData.append("PhotoURL", dataThisComment[commentID]?.PhotoURL);
+        formData.append("ReplyID", commentID);
+        await dispatch(
+          postComment({ PostID: threadID, data: formData, userID })
+        );
+        setDataThisComment((prev) => ({
+          ...prev,
+          [commentID]: {
+            ...prev[commentID],
+            Content: "",
+            PhotoURL: "",
+            base64Url: "",
+          },
+        }));
+      }
+    }
+  };
+
   const handlePushSubCommentImage = async (e, CommentID) => {
     let file = e?.target?.files[0];
     if (!file) return;
@@ -642,7 +665,9 @@ function DetailPost() {
                           )}
 
                           <button
-                            //  onClick={}
+                            onClick={() =>
+                              handleSubmitSendSubComment(dataComment?.CommentID)
+                            }
                             className="flex-1 h-full aspect-square text-blue-500 bg-white hover:shadow-sm my-auto text-xl rounded-r-full hover:bg-blue-500 hover:text-white flex items-center justify-center"
                           >
                             <GrSend />

@@ -82,7 +82,7 @@ const GroupDetail = () => {
 
   const getComments = async (postID) => {
     const { data } = await axios.get(
-      `${API__SERVER}/forum/comment/${postID}/${userID}`
+      `${API__SERVER}/forum/comment/${postID}/${userID}?page=1`
     );
     return data.Comments;
   };

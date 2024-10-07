@@ -35,6 +35,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import config from "../../../../configs/Configs.json";
 import { data } from "autoprefixer";
 import LazyLoad from "react-lazy-load";
+import { ref } from "joi";
 const { URL_BASE64, API__SERVER } = config;
 const socket = io("https://api.iudi.xyz");
 
@@ -227,7 +228,7 @@ const MessageDetail = () => {
   };
 
   // console.log(dataSendMessage);
-  console.log(imageUrl, fileImage);
+  console.log(ref.current);
 
   return (
     <div className="pb-5 bg-white rounded-3xl h-full flex flex-col">
