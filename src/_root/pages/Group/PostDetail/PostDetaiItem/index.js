@@ -37,7 +37,7 @@ const PostDetailItem = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    groupId && dispatch(fetchDetailPost({ groupId, postId }));
+    groupId && dispatch(fetchDetailPost({ groupId, postId, userID }));
   }, [changeTogglePosts, postId]);
 
   useEffect(() => {

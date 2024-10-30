@@ -9,20 +9,9 @@ import { AiTwotoneLike } from "react-icons/ai";
 import { GrSend } from "react-icons/gr";
 import { RiReplyLine } from "react-icons/ri";
 import { CiCirclePlus } from "react-icons/ci";
-import {
-  addLikePost,
-  fetchDetailPost,
-  likeUnlikeComment,
-  postComment,
-  postsSelector,
-  removeComment,
-} from "../../../../service/redux/posts/postsSlice";
+import { addLikePost, fetchDetailPost, likeUnlikeComment, postComment, postsSelector, removeComment } from "../../../../service/redux/posts/postsSlice";
 import Moment from "react-moment";
-import {
-  handleErrorImg,
-  handleFormatNumber,
-  HandleHiddenText,
-} from "../../../../service/utils/utils";
+import { handleErrorImg, handleFormatNumber, HandleHiddenText } from "../../../../service/utils/utils";
 import { Auth } from "../../../../service/utils/auth";
 import config from "../../../../configs/Configs.json";
 import axios from "axios";
@@ -34,16 +23,10 @@ const { API__SERVER } = config;
 
 function DetailPost() {
   const { slug, threadID, groupId } = useParams();
-  const [isFavorited, setIsFavorited] = useState(
-    JSON?.parse(
-      window.localStorage.getItem("IsLiked")
-        ? window.localStorage.getItem("IsLiked")
-        : "{}"
-    )?.isLike ?? false
-  );
   const { userID } = new Auth();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(30);
+  const [totalPage, setTotalPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [listComment, setListComment] = useState([]);
   const [imageBase64s, setImageBase64s] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
@@ -70,15 +53,6 @@ function DetailPost() {
 
   const { post, changeTogglePost } = useSelector(postsSelector);
   const dispatch = useDispatch();
-  const handleSetIsLike = (isLike, PostID) => {
-    window.localStorage.setItem(
-      "IsLiked",
-      JSON.stringify({
-        id: PostID,
-        isLike: isLike,
-      })
-    );
-  };
 
   const handleSubmitFormPost = () => {
     const { Comment } = dataThisComment;
@@ -91,9 +65,7 @@ function DetailPost() {
       const formData = new FormData();
       formData.append("Content", Comment);
       imageFiles.forEach((file) => formData.append("PhotoURL", file));
-      dispatch(
-        postComment({ PostID: dataThisComment?.PostID, data: formData, userID })
-      );
+      dispatch(postComment({ PostID: dataThisComment?.PostID, data: formData, userID }));
     }
   };
 
@@ -117,9 +89,7 @@ function DetailPost() {
         formData.append("Content", dataThisComment[commentID]?.Content);
         formData.append("PhotoURL", dataThisComment[commentID]?.PhotoURL);
         formData.append("ReplyID", commentID);
-        await dispatch(
-          postComment({ PostID: threadID, data: formData, userID })
-        );
+        await dispatch(postComment({ PostID: threadID, data: formData, userID }));
         setDataThisComment((prev) => ({
           ...prev,
           [commentID]: {
@@ -175,13 +145,12 @@ function DetailPost() {
 
   useEffect(() => {
     (async (PostID, UserID, groupId) => {
-      await dispatch(fetchDetailPost({ groupId, postId: threadID }));
-      const { data } = await axios
-        .get(`${API__SERVER}/forum/comment/${PostID}/${UserID}?page=${page}`)
-        .catch(() => toast.error("Get list of comments failed!"));
+      await dispatch(fetchDetailPost({ groupId, postId: threadID, userID }));
+      const { data } = await axios.get(`${API__SERVER}/forum/comment/${PostID}/${UserID}/${limit}?page=${page}`).catch(() => toast.error("Get list of comments failed!"));
       if (Array.isArray(data?.Comments) && data?.Comments.length > 0) {
         setListComment(data?.Comments);
-        setLimit(data?.total_page);
+        setTotalPage(Math.ceil(data?.total_page ?? 0));
+        // setPage(data?.total_page);
       }
     })(threadID, userID, groupId);
     setIsShowFormComment(false);
@@ -209,15 +178,17 @@ function DetailPost() {
   //     };
   //   })
   // );
+  console.log(totalPage, limit, page);
   return (
     <div className="w-full h-full p-8 backdrop:blur-md bg-black/50 text-white mt-4 relative">
       <div className="w-full flex justify-between items-center">
         <div className="mt-3 py-2 rounded-xl">
           <Pagination
             colorText="#fff"
-            total={Number(20)}
-            pageSize={10}
-            current={Number(1)}
+            total={totalPage * limit}
+            pageSize={limit}
+            current={Number(page)}
+            onChange={(page) => setPage(page)}
             showLessItems={false}
             showQuickJumper={false}
             showSizeChanger={false}
@@ -227,9 +198,7 @@ function DetailPost() {
         </div>
         <div className="">
           <Link to={`/group/${slug}/${groupId}`}>
-            <button className=" px-1 py-2 rounded-lg shadow-sm shadow-white">
-              Tới bài mới nhất
-            </button>
+            <button className=" px-1 py-2 rounded-lg shadow-sm shadow-white">Tới bài mới nhất</button>
           </Link>
         </div>
       </div>
@@ -243,42 +212,25 @@ function DetailPost() {
               <React.Fragment key={i}>
                 <div key={i} className=" rounded-md overflow-hidden">
                   <div className="w-full py-2 px-1 backdrop:blur-md flex bg-white justify-between text-black">
-                    <Moment
-                      locale="VN"
-                      format="hh:mm DD/MM/YYYY"
-                      fromNow
-                    >{`${item?.UpdatePostAt}+0700`}</Moment>
+                    <Moment locale="VN" format="hh:mm DD/MM/YYYY" fromNow>{`${item?.UpdatePostAt}+0700`}</Moment>
                     <h3>#Chủ thớt</h3>
                   </div>
                   <div className="border-x border-b border-solid border-white rounded-b-md overflow-hidden">
                     <Link to={`/profile/${item?.UserName}`}>
                       <div className="w-full border-b border-solid border-white p-4">
                         <div className="w-full h-auto flex justify-start items-center">
-                          <img
-                            src={item?.Avatar}
-                            alt="avatar"
-                            className=" w-1/12  aspect-square rounded-full mr-3 object-cover"
-                            onError={handleErrorImg}
-                          />
+                          <img src={item?.Avatar} alt="avatar" className=" w-1/12  aspect-square rounded-full mr-3 object-cover" onError={handleErrorImg} />
                           <div>
-                            <h1 className=" text-xl font-bold w-full">
-                              {item?.UserFullName}
-                            </h1>
+                            <h1 className=" text-xl font-bold w-full">{item?.UserFullName}</h1>
                             <h1 className=" text-lg font-semibold w-full">
-                              <Moment
-                                fromNow
-                                ago
-                                date={`${item?.UpdatePostAt}+0700`}
-                              />
+                              <Moment fromNow ago date={`${item?.UpdatePostAt}+0700`} />
                             </h1>
                           </div>
                         </div>
                       </div>
                     </Link>
                     <div className="p-4 relative">
-                      <h1 className=" text-lg font-semibold mb-4">
-                        {item?.Title}
-                      </h1>
+                      <h1 className=" text-lg font-semibold mb-4">{item?.Title}</h1>
                       <p>
                         <HandleHiddenText text={item?.Content} length={100} />
                       </p>
@@ -287,32 +239,20 @@ function DetailPost() {
                         item?.listphoto.length > 0 &&
                         item?.listphoto.map((item, i) => {
                           return (
-                            <div
-                              key={i}
-                              className="w-full h-[70vh] backdrop:blur-md bg-black/80 rounded-lg"
-                            >
-                              <img
-                                src={item?.photo_link}
-                                alt="post"
-                                className="h-full mx-auto object-contain"
-                                onError={handleErrorImg}
-                              />
+                            <div key={i} className="w-full h-[70vh] backdrop:blur-md bg-black/80 rounded-lg">
+                              <img src={item?.photo_link} alt="post" className="h-full mx-auto object-contain" onError={handleErrorImg} />
                             </div>
                           );
                         })}
 
                       <div className=" w-full pt-3 flex gap-2 justify-between items-center">
                         <div className="  pt-3 flex gap-2 items-center text-2xl">
-                          {!item?.IsFavorited ? (
+                          {!item?.favoriteType ? (
                             <FaRegHeart
                               className="text-white cursor-pointer"
                               onClick={(e) => {
                                 e.preventDefault();
-                                dispatch(
-                                  addLikePost({ postId: item?.PostID, userID })
-                                );
-                                handleSetIsLike(true, item?.PostID);
-                                setIsFavorited(true);
+                                dispatch(addLikePost({ postId: item?.PostID, userID }));
                               }}
                             />
                           ) : (
@@ -320,11 +260,7 @@ function DetailPost() {
                               className="text-red-500 cursor-pointer"
                               onClick={(e) => {
                                 e.preventDefault();
-                                dispatch(
-                                  addLikePost({ postId: item?.PostID, userID })
-                                );
-                                handleSetIsLike(false, item?.PostID);
-                                setIsFavorited(false);
+                                dispatch(addLikePost({ postId: item?.PostID, userID }));
                               }}
                             />
                           )}
@@ -356,11 +292,7 @@ function DetailPost() {
           return (
             <div key={i} className="mt-2 rounded-md h-auto">
               <div className="w-full py-2 px-1 backdrop:blur-md flex bg-white justify-between text-black">
-                <Moment
-                  locale="VN"
-                  format="hh:mm DD/MM/YYYY"
-                  fromNow
-                >{`${dataComment?.CommentUpdateTime}+0700`}</Moment>
+                <Moment locale="VN" format="hh:mm DD/MM/YYYY" fromNow>{`${dataComment?.CommentUpdateTime}+0700`}</Moment>
                 <h3>#Comment {i + 1}</h3>
               </div>
               <div className="border-x border-b border-solid border-white  rounded-b-md overflow-hidden">
@@ -368,22 +300,11 @@ function DetailPost() {
                   <div className="w-full flex justify-between items-center">
                     <Link to={`/profile/${dataComment?.UserName}`}>
                       <div className=" flex justify-start items-center">
-                        <img
-                          src={dataComment?.Avatar}
-                          alt="avatar"
-                          className=" w-16 h-16 aspect-square  rounded-full mr-3 object-cover"
-                          onError={handleErrorImg}
-                        />
+                        <img src={dataComment?.Avatar} alt="avatar" className=" w-16 h-16 aspect-square  rounded-full mr-3 object-cover" onError={handleErrorImg} />
                         <div className="w-full">
-                          <h1 className=" text-sm font-medium">
-                            {dataComment?.FullName}
-                          </h1>
+                          <h1 className=" text-sm font-medium">{dataComment?.FullName}</h1>
                           <h1 className=" text-lg font-semibold w-full">
-                            <Moment
-                              fromNow
-                              ago
-                              date={`${dataComment?.CommentUpdateTime}+0700`}
-                            />
+                            <Moment fromNow ago date={`${dataComment?.CommentUpdateTime}+0700`} />
                           </h1>
                         </div>
                       </div>{" "}
@@ -393,9 +314,7 @@ function DetailPost() {
                         <button
                           className={`hover:text-red-500`}
                           onClick={() => {
-                            const IsExist = window.confirm(
-                              "Bạn chắc chắn muốn xóa comment này?"
-                            );
+                            const IsExist = window.confirm("Bạn chắc chắn muốn xóa comment này?");
                             if (IsExist) {
                               dispatch(removeComment(dataComment?.CommentID));
                             }
@@ -410,26 +329,15 @@ function DetailPost() {
 
                 <div className="p-4">
                   <p>
-                    <HandleHiddenText
-                      text={dataComment?.Content}
-                      length={100}
-                    />
+                    <HandleHiddenText text={dataComment?.Content} length={100} />
                   </p>
 
                   {Array.isArray(dataComment?.PhotoURL) &&
                     dataComment?.PhotoURL.length > 0 &&
                     dataComment?.PhotoURL.map((dataComment, i) => {
                       return (
-                        <div
-                          key={i}
-                          className="w-full aspect-video backdrop:blur-md bg-black/80 rounded-lg"
-                        >
-                          <img
-                            src={dataComment}
-                            alt="post"
-                            className="w-full h-full object-contain rounded-lg"
-                            onError={handleErrorImg}
-                          />
+                        <div key={i} className="w-full aspect-video backdrop:blur-md bg-black/80 rounded-lg">
+                          <img src={dataComment} alt="post" className="w-full h-full object-contain rounded-lg" onError={handleErrorImg} />
                         </div>
                       );
                     })}
@@ -477,16 +385,11 @@ function DetailPost() {
                       }}
                       className="text-sm font-medium hover:underline cursor-pointer hover:text-blue-500"
                     >
-                      {Array.isArray(dataComment?.ReplyID) &&
-                      dataComment?.ReplyID.length > 0
-                        ? handleFormatNumber(dataComment?.ReplyID?.length)
-                        : 0}{" "}
-                      comments
+                      {Array.isArray(dataComment?.ReplyID) && dataComment?.ReplyID.length > 0 ? handleFormatNumber(dataComment?.ReplyID?.length) : 0} comments
                     </div>
                   </div>
                 </div>
-                {dataThisComment[dataComment?.CommentID]?.isShowID ===
-                  dataComment?.CommentID && (
+                {dataThisComment[dataComment?.CommentID]?.isShowID === dataComment?.CommentID && (
                   <>
                     {/*List comments  */}
                     <div className=" border-t border-white p-4">
@@ -497,38 +400,23 @@ function DetailPost() {
                             return (
                               <div>
                                 <div className="mt-4 flex items-center mb-1">
-                                  <div
-                                    className="w-10 aspect-square mr-2"
-                                    key={i}
-                                  >
-                                    <img
-                                      src={itemReply?.Avatar}
-                                      alt="avatar"
-                                      className="w-full h-full rounded-full"
-                                      onError={handleErrorImg}
-                                    />
+                                  <div className="w-10 aspect-square mr-2 flex-shrink-0" key={i}>
+                                    <img src={itemReply?.Avatar} alt="avatar" className="w-full h-full rounded-full" onError={handleErrorImg} />
                                   </div>
-                                  <div className="flex items-start justify-center flex-col px-3 pr-14 py-2 bg-[#222222] rounded-lg">
-                                    <h3 className="text-sm font-medium">
-                                      {itemReply?.FullName}
-                                    </h3>
+                                  <div className="flex items-start justify-center flex-col px-3 pr-14 py-2 bg-[#222222] rounded-lg overflow-hidden">
+                                    <h3 className="text-sm font-medium">{itemReply?.FullName}</h3>
                                     <p>{itemReply?.Content}</p>
+                                    {itemReply?.PhotoURL[0] && (
+                                      <div className="w-96 aspect-auto mt-2 object-contain rounded-lg overflow-hidden">
+                                        <img alt="Imagecomment" src={itemReply?.PhotoURL[0]} />
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                                 <div className=" text-xs flex gap-3 items-center ">
-                                  <Moment
-                                    fromNow
-                                    ago
-                                    date={`${itemReply?.CommentUpdateTime}+0700`}
-                                  />
+                                  <Moment fromNow ago date={`${itemReply?.CommentUpdateTime}+0700`} />
                                   <p
-                                    className={`${
-                                      itemReply?.IsFavorited && "text-blue-500"
-                                    } hover:text-blue-500 cursor-pointer${
-                                      itemReply?.IsFavorited
-                                        ? "text-blue-500"
-                                        : "text-white"
-                                    }`}
+                                    className={`${itemReply?.IsFavorited && "text-blue-500"} hover:text-blue-500 cursor-pointer${itemReply?.IsFavorited ? "text-blue-500" : "text-white"}`}
                                     onClick={() =>
                                       dispatch(
                                         likeUnlikeComment({
@@ -538,24 +426,15 @@ function DetailPost() {
                                       )
                                     }
                                   >
-                                    {itemReply?.FavoriteCount
-                                      ? itemReply?.FavoriteCount
-                                      : ""}{" "}
-                                    {itemReply?.IsFavorited
-                                      ? "Đã Thích"
-                                      : "Thích"}
+                                    {itemReply?.FavoriteCount ? itemReply?.FavoriteCount : ""} {itemReply?.IsFavorited ? "Đã Thích" : "Thích"}
                                   </p>
                                   {itemReply?.UserID === userID && (
                                     <button
                                       className={`hover:text-red-500`}
                                       onClick={() => {
-                                        const IsExist = window.confirm(
-                                          "Bạn chắc chắn muốn xóa comment này?"
-                                        );
+                                        const IsExist = window.confirm("Bạn chắc chắn muốn xóa comment này?");
                                         if (IsExist) {
-                                          dispatch(
-                                            removeComment(itemReply?.CommentID)
-                                          );
+                                          dispatch(removeComment(itemReply?.CommentID));
                                         }
                                       }}
                                     >
@@ -568,23 +447,13 @@ function DetailPost() {
                           })}
                       </div>
                     </div>
-                    <div
-                      className="p-4 "
-                      onClick={() =>
-                        window.localStorage.setItem(
-                          "ThisCommentID",
-                          dataComment?.CommentID
-                        )
-                      }
-                    >
+                    <div className="p-4 " onClick={() => window.localStorage.setItem("ThisCommentID", dataComment?.CommentID)}>
                       <div className="w-full flex relative">
                         <input
                           type="text"
                           className="rounded-l-full w-full py-2 px-4 flex-[6] bg-white text-black outline-none"
                           placeholder="Bình luận bài viết..."
-                          value={
-                            dataThisComment[dataComment?.CommentID]?.Content
-                          }
+                          value={dataThisComment[dataComment?.CommentID]?.Content}
                           onChange={(e) => {
                             setDataThisComment((prev) => ({
                               ...prev,
@@ -597,19 +466,12 @@ function DetailPost() {
                         />
                         <div className="flex-[1] flex z-50">
                           <div className="relative h-full bg-white text-blue-500 hover:text-white hover:bg-blue-500 flex-1 aspect-square flex items-center justify-center">
-                            <button
-                              type="button"
-                              className="flex"
-                              onClick={() => setShowEmoji(!showEmoji)}
-                            >
+                            <button type="button" className="flex" onClick={() => setShowEmoji(!showEmoji)}>
                               <MdEmojiEmotions className="size-7" />
                             </button>
 
                             {showEmoji && (
-                              <div
-                                className="fixed top-0 right-0 left-0 bottom-0 flex justify-center items-center z-50"
-                                onClick={() => setShowEmoji(false)}
-                              >
+                              <div className="fixed top-0 right-0 left-0 bottom-0 flex justify-center items-center z-50" onClick={() => setShowEmoji(false)}>
                                 <EmojiPicker
                                   onClick={(e) => e.preventDefault()}
                                   onEmojiClick={(data) => {
@@ -619,55 +481,30 @@ function DetailPost() {
                               </div>
                             )}
                           </div>
-                          {!dataThisComment[dataComment?.CommentID]
-                            ?.PhotoURL ? (
+                          {!dataThisComment[dataComment?.CommentID]?.PhotoURL ? (
                             <button className="flex-1 h-full aspect-square text-blue-500 bg-white my-auto text-xl hover:bg-blue-500 hover:text-white flex items-center justify-center relative">
                               <input
                                 type="file"
                                 className="absolute top-0 right-0 left-0 bottom-0 opacity-0 cursor-pointer"
-                                onChange={(e) =>
-                                  handlePushSubCommentImage(
-                                    e,
-                                    dataComment?.CommentID
-                                  )
-                                }
-                                value={
-                                  dataThisComment[dataComment?.CommentID]
-                                    ?.PhotoURL
-                                    ? ""
-                                    : ""
-                                }
+                                onChange={(e) => handlePushSubCommentImage(e, dataComment?.CommentID)}
+                                value={dataThisComment[dataComment?.CommentID]?.PhotoURL ? "" : ""}
                               />
                               <FaRegFileImage className="" />
                             </button>
                           ) : (
-                            dataThisComment[dataComment?.CommentID]
-                              ?.base64Url && (
+                            dataThisComment[dataComment?.CommentID]?.base64Url && (
                               <div className="flex-[2] h-full aspect-video overflow-hidden relative">
                                 <div
-                                  onClick={() =>
-                                    handleDeleteImageSubImage(
-                                      dataComment?.CommentID
-                                    )
-                                  }
+                                  onClick={() => handleDeleteImageSubImage(dataComment?.CommentID)}
                                   className="h-3 w-3 rounded-full bg-red-500 hover:bg-red-900 absolute top-0.5 right-0.5 cursor-pointer"
                                 ></div>
-                                <img
-                                  className="w-full h-full object-cover"
-                                  src={
-                                    dataThisComment[dataComment?.CommentID]
-                                      ?.base64Url
-                                  }
-                                  alt="list_image_edit_post"
-                                />
+                                <img className="w-full h-full object-cover" src={dataThisComment[dataComment?.CommentID]?.base64Url} alt="list_image_edit_post" />
                               </div>
                             )
                           )}
 
                           <button
-                            onClick={() =>
-                              handleSubmitSendSubComment(dataComment?.CommentID)
-                            }
+                            onClick={() => handleSubmitSendSubComment(dataComment?.CommentID)}
                             className="flex-1 h-full aspect-square text-blue-500 bg-white hover:shadow-sm my-auto text-xl rounded-r-full hover:bg-blue-500 hover:text-white flex items-center justify-center"
                           >
                             <GrSend />
@@ -682,72 +519,54 @@ function DetailPost() {
           );
         })}
 
+      <div className="w-full flex justify-center items-center">
+        <div className="mt-3 py-2 rounded-xl">
+          <Pagination
+            colorText="#fff"
+            total={totalPage * limit}
+            pageSize={limit}
+            current={Number(page)}
+            onChange={(page) => setPage(page)}
+            showLessItems={false}
+            showQuickJumper={false}
+            showSizeChanger={false}
+            align="start"
+            className=" text-white custom-pagination"
+          />
+        </div>
+      </div>
       {/* Form comment */}
-      <PopupForm
-        isShowForm={isShowFormComment}
-        position="start"
-        setIsShowForm={setIsShowFormComment}
-        title={`Bình luận bài viết ${dataThisComment.Title}`}
-      >
-        <div
-          id="custom-pagination"
-          className=" w-full h-screen overflow-x-hidden overflow-y-auto pb-10"
-        >
+      <PopupForm isShowForm={isShowFormComment} position="start" setIsShowForm={setIsShowFormComment} title={`Bình luận bài viết ${dataThisComment.Title}`}>
+        <div id="custom-pagination" className=" w-full h-screen overflow-x-hidden overflow-y-auto pb-10">
           <div className=" rounded-md overflow-hidden">
             <div className="w-full py-2 px-1 backdrop:blur-md flex bg-white justify-between text-black">
-              <Moment
-                locale="VN"
-                format="hh:mm DD/MM/YYYY"
-                fromNow
-              >{`${dataThisComment?.UpdatePostAt}+0700`}</Moment>
+              <Moment locale="VN" format="hh:mm DD/MM/YYYY" fromNow>{`${dataThisComment?.UpdatePostAt}+0700`}</Moment>
               <h3>#Chủ thớt</h3>
             </div>
             <div className="border-x border-b border-solid border-white rounded-b-md overflow-hidden">
               <Link to={`/profile/${dataThisComment?.UserName}`}>
                 <div className="w-full border-b border-solid border-white p-4">
                   <div className=" w-1/12 aspect-square flex justify-start items-center">
-                    <img
-                      src={dataThisComment?.Avatar}
-                      alt="avatar"
-                      className="w-full h-full rounded-full mr-3 object-cover"
-                      onError={handleErrorImg}
-                    />
+                    <img src={dataThisComment?.Avatar} alt="avatar" className="w-full h-full rounded-full mr-3 object-cover" onError={handleErrorImg} />
                     <div>
-                      <h1 className=" text-xl font-bold">
-                        {dataThisComment?.UserFullName}
-                      </h1>
-                      <h1 className=" text-lg font-semibold">
-                        {dataThisComment?.Bio}
-                      </h1>
+                      <h1 className=" text-xl font-bold">{dataThisComment?.UserFullName}</h1>
+                      <h1 className=" text-lg font-semibold">{dataThisComment?.Bio}</h1>
                     </div>
                   </div>
                 </div>
               </Link>
               <div className="p-4 relative  border-b border-white">
-                <h1 className=" text-lg font-semibold mb-4">
-                  {dataThisComment?.Title}
-                </h1>
+                <h1 className=" text-lg font-semibold mb-4">{dataThisComment?.Title}</h1>
                 <p>
-                  <HandleHiddenText
-                    text={dataThisComment?.Content}
-                    length={100}
-                  />
+                  <HandleHiddenText text={dataThisComment?.Content} length={100} />
                 </p>
 
                 {Array.isArray(dataThisComment?.listphoto) &&
                   dataThisComment?.listphoto.length > 0 &&
                   dataThisComment?.listphoto.map((dataThisComment, i) => {
                     return (
-                      <div
-                        key={i}
-                        className="w-full h-[50vh] backdrop:blur-md bg-black/80 rounded-lg mt-2"
-                      >
-                        <img
-                          src={dataThisComment?.photo_link}
-                          alt="post"
-                          className="h-full mx-auto object-contain"
-                          onError={handleErrorImg}
-                        />
+                      <div key={i} className="w-full h-[50vh] backdrop:blur-md bg-black/80 rounded-lg mt-2">
+                        <img src={dataThisComment?.photo_link} alt="post" className="h-full mx-auto object-contain" onError={handleErrorImg} />
                       </div>
                     );
                   })}
@@ -768,9 +587,7 @@ function DetailPost() {
                       }))
                     }
                   />
-                  <p className="text-xs text-red-500">
-                    {dataThisComment?.warnComment}
-                  </p>
+                  <p className="text-xs text-red-500">{dataThisComment?.warnComment}</p>
                 </div>
                 <div className="mb-3 mt-4">
                   <div className=" flex gap-2 my-3">
@@ -778,34 +595,20 @@ function DetailPost() {
                       imageBase64s.length > 0 &&
                       imageBase64s.map((item, index) => (
                         <div className=" h-16 aspect-auto rounded-lg overflow-hidden shadow-sm shadow-white relative">
-                          <div
-                            onClick={() => handleDeleteListImage(index)}
-                            className="h-3 w-3 rounded-full bg-red-500 hover:bg-red-900 absolute top-0.5 right-0.5"
-                          ></div>
-                          <img
-                            className="w-full h-full"
-                            src={item}
-                            alt="list_image_edit_post"
-                          />
+                          <div onClick={() => handleDeleteListImage(index)} className="h-3 w-3 rounded-full bg-red-500 hover:bg-red-900 absolute top-0.5 right-0.5"></div>
+                          <img className="w-full h-full" src={item} alt="list_image_edit_post" />
                         </div>
                       ))}
                   </div>
 
                   <div className="flex z-50">
                     <div className=" w-16 relative bg-white text-blue-500 hover:text-white hover:bg-blue-500 aspect-square flex items-center justify-center rounded-l-full">
-                      <button
-                        type="button"
-                        className="flex"
-                        onClick={() => setShowEmoji(!showEmoji)}
-                      >
+                      <button type="button" className="flex" onClick={() => setShowEmoji(!showEmoji)}>
                         <MdEmojiEmotions className="size-7" />
                       </button>
 
                       {showEmoji && (
-                        <div
-                          className="fixed top-0 right-0 left-0 bottom-0 flex justify-center items-center z-50"
-                          onClick={() => setShowEmoji(false)}
-                        >
+                        <div className="fixed top-0 right-0 left-0 bottom-0 flex justify-center items-center z-50" onClick={() => setShowEmoji(false)}>
                           <EmojiPicker
                             onClick={(e) => e.preventDefault()}
                             onEmojiClick={(data) => {
@@ -821,12 +624,7 @@ function DetailPost() {
                     </div>
                     {Array.isArray(imageFiles) && imageFiles.length === 0 && (
                       <button className=" w-16 aspect-square text-blue-500 bg-white my-auto text-xl hover:bg-blue-500 hover:text-white flex items-center justify-center relative">
-                        <input
-                          type="file"
-                          className="absolute top-0 right-0 left-0 bottom-0 opacity-0 cursor-pointer"
-                          onChange={handlePushImage}
-                          value={imageFiles ? "" : ""}
-                        />
+                        <input type="file" className="absolute top-0 right-0 left-0 bottom-0 opacity-0 cursor-pointer" onChange={handlePushImage} value={imageFiles ? "" : ""} />
                         <FaRegFileImage className="" />
                       </button>
                     )}

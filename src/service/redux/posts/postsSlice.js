@@ -82,9 +82,11 @@ export const fetchPosts = createAsyncThunk(
 
 export const fetchDetailPost = createAsyncThunk(
   "posts/fetchDetailPost",
-  async ({ groupId, postId }) => {
+  async ({ groupId, postId, userID }) => {
     const { data } = await axios
-      .get(`${API__SERVER}/forum/group/detail_post/${postId}/${groupId}`)
+      .get(
+        `${API__SERVER}/forum/group/detail_post/${postId}/${groupId}?UserID=${userID}`
+      )
       .catch((err) => toast.error("Có lỗi sảy ra xin vui lòng thử lại sau."));
     return data?.Posts;
   }
