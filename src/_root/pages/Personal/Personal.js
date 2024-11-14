@@ -1,5 +1,5 @@
 import axios from "axios";
-import { React, useEffect, useState, useRef } from "react";
+import { React, useEffect, useState, useRef, useLayoutEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
@@ -8,11 +8,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
-import {
-  usersSelector,
-  patchAvatar,
-  patchProfile,
-} from "../../../service/redux/users/usersSlice";
+import { usersSelector, patchAvatar, patchProfile } from "../../../service/redux/users/usersSlice";
 
 import Header2 from "../../../components/Header/Header2";
 import Footer from "../../../components/Footer/Footer";
@@ -79,6 +75,19 @@ function Personal() {
     toast.success("Lưu cài đặt thành công!", { autoClose: 1000 });
   };
 
+  useLayoutEffect(() => {
+    const { radius, minAge, gender } = JSON.parse(localStorage.getItem("findingSetting") || "{}");
+    if (radius && minAge && gender) {
+      setRadius(radius ?? "0");
+      setAge(minAge ?? "12");
+      setGender1(gender ?? "nam");
+    } else {
+      setRadius("0");
+      setAge("12");
+      setGender1("nam");
+    }
+  }, []);
+
   // * ___________  handle FORM ___________
 
   const {
@@ -87,11 +96,8 @@ function Personal() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: async () => {
-      const response = await axios.get(
-        `https://api.iudi.xyz/api/profile/${userName}`
-      );
-      const { Bio, FullName, BirthDate, BirthPlace, CurrentAdd, Phone } =
-        response?.data?.Users[0];
+      const response = await axios.get(`https://api.iudi.xyz/api/profile/${userName}`);
+      const { Bio, FullName, BirthDate, BirthPlace, CurrentAdd, Phone } = response?.data?.Users[0];
 
       return { Bio, FullName, BirthDate, BirthPlace, CurrentAdd, Phone };
     },
@@ -144,9 +150,7 @@ function Personal() {
 
   useEffect(() => {
     window.onscroll = () => {
-      document.documentElement.scrollTop > 0
-        ? setIsDark(true)
-        : setIsDark(false);
+      document.documentElement.scrollTop > 0 ? setIsDark(true) : setIsDark(false);
     };
 
     setWidthSidebar(sidebarRef?.current?.offsetWidth);
@@ -162,20 +166,11 @@ function Personal() {
 
   return !showMobile ? (
     <div style={backgroundImage} className="mobile:hidden" ref={decktopRef}>
-      <Header2
-        isDark={isDark}
-        onGetHeight={getHeightHeader}
-        isPositionFixed={true}
-      />
+      <Header2 isDark={isDark} onGetHeight={getHeightHeader} isPositionFixed={true} />
 
-      <div
-        ref={sidebarRef}
-        className="fixed top-0 left-0 mobile:hidden ipad:hidden tablet:w-[300px] w-[400px] border-r-2 border-white h-screen"
-      >
+      <div ref={sidebarRef} className="fixed top-0 left-0 mobile:hidden ipad:hidden tablet:w-[300px] w-[400px] border-r-2 border-white h-screen">
         <div className="mt-[200px] ml-[50px] mr-[50px]">
-          <h1 className="text-3xl font-semibold text-white text-green-600 mb-11">
-            Cài đặt tìm kiếm
-          </h1>
+          <h1 className="text-3xl font-semibold text-white text-green-600 mb-11">Cài đặt tìm kiếm</h1>
           <label
             className="mt-8 mb-2 text-sm font-bold text-gray-700 "
             htmlFor="fullname"
@@ -187,27 +182,13 @@ function Personal() {
               <span className="text-white">Khoảng cách (m): </span>
               <span className="font-bold text-white">{radius}</span>
             </div>
-            <input
-              type="range"
-              min={0}
-              max={5000}
-              onChange={onHandleChangeRadius}
-              className="mt-4 range range-success range-xs range-infor"
-            />
+            <input type="range" value={radius} min={0} max={5000} onChange={onHandleChangeRadius} className="mt-4 range range-success range-xs range-infor" />
           </label>
-          <label
-            className="block mt-3 mb-2 text-sm font-bold text-white"
-            htmlFor="gender"
-          >
+          <label className="block mt-3 mb-2 text-sm font-bold text-white" htmlFor="gender">
             Xu hướng
           </label>
 
-          <select
-            onChange={onHandleChangeGender}
-            className="w-full px-3 py-2 mt-2 mb-4 bg-white focus:outline-none text-black"
-            defaultValue="Nam"
-            id="gender"
-          >
+          <select onChange={onHandleChangeGender} className="w-full px-3 py-2 mt-2 mb-4 bg-white focus:outline-none text-black" defaultValue={"Nam"} value={gender1} id="gender">
             <option className="text-green-600">Nam</option>
             <option className="text-green-600">Nữ</option>
             <option className="text-green-600">Đồng tính Nam</option>
@@ -224,19 +205,9 @@ function Personal() {
               <span className="text-white">Độ tuổi:</span>
               <span className="font-bold text-white">Từ {age} trở lên</span>
             </div>
-            <input
-              type="range"
-              min={12}
-              max={100}
-              onChange={onHandleChangeAge}
-              className="mt-4 range range-success range-xs range-infor"
-            />
+            <input type="range" value={age} min={12} max={100} onChange={onHandleChangeAge} className="mt-4 range range-success range-xs range-infor" />
           </label>
-          <button
-            onClick={onHandleSave}
-            className="inline-block py-2 mt-8 text-sm text-white rounded shadow bg-green px-11"
-            type="button"
-          >
+          <button onClick={onHandleSave} className="inline-block py-2 mt-8 text-sm text-white rounded shadow bg-green px-11" type="button">
             Lưu cài đặt
           </button>
         </div>
@@ -252,13 +223,9 @@ function Personal() {
           {/* user form */}
           <div className="col-span-1 bg-[#252525] border border-[#4EC957] rounded-lg py-[50px] px-[20px]">
             <div className="mb-[15px] flex flex-col items-center ">
-              <h1 className="text-[34px] font-semibold text-[#4EC957]">
-                Thông tin cá nhân
-              </h1>
+              <h1 className="text-[34px] font-semibold text-[#4EC957]">Thông tin cá nhân</h1>
 
-              <p className="text-white text-[15px] font-[300] mt-2">
-                Hãy điền thông tin cá nhân để chúng ta hiểu nhau hơn
-              </p>
+              <p className="text-white text-[15px] font-[300] mt-2">Hãy điền thông tin cá nhân để chúng ta hiểu nhau hơn</p>
             </div>
 
             {isLoading === "pending" ? (
@@ -268,22 +235,12 @@ function Personal() {
                 <div className="flex items-end justify-center">
                   <LazyLoad>
                     <>
-                      <img
-                        src={`${avatar}`}
-                        alt="personal"
-                        className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover"
-                      />
+                      <img src={`${avatar}`} alt="personal" className="w-[100px] h-[100px] rounded-[10px] mr-[5px] object-cover" />
                     </>
                   </LazyLoad>
 
                   <label htmlFor="imageUpload" className="cursor-pointer">
-                    <input
-                      type="file"
-                      id="imageUpload"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageChange}
-                    />
+                    <input type="file" id="imageUpload" accept="image/*" className="hidden" onChange={handleImageChange} />
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -315,13 +272,9 @@ function Personal() {
                   ))}
 
                   <button
-                    className={`${
-                      isDirty || isChangeImage ? "hover:bg-green" : "opacity-50"
-                    }  duration-200 w-full mt-5 font-semibold text-[20px] text-white rounded-lg h-[50px] shadow bg-[#008748]`}
+                    className={`${isDirty || isChangeImage ? "hover:bg-green" : "opacity-50"}  duration-200 w-full mt-5 font-semibold text-[20px] text-white rounded-lg h-[50px] shadow bg-[#008748]`}
                     type="submit"
-                    disabled={
-                      isDirty == false && isChangeImage === false ? true : false
-                    }
+                    disabled={isDirty == false && isChangeImage === false ? true : false}
                   >
                     {isSubmitting ? "Loading..." : "Lưu"}
                   </button>
@@ -351,14 +304,10 @@ function Personal() {
               <IoIosArrowBack />
             </Link>
           </div>
-          <h1 className="text-xl font-semibold text-black">
-            Thông tin cá nhân
-          </h1>
+          <h1 className="text-xl font-semibold text-black">Thông tin cá nhân</h1>
         </div>
 
-        <p className="text-sm font-[300] mt-2">
-          Hãy điền thông tin cá nhân để chúng ta hiểu nhau hơn
-        </p>
+        <p className="text-sm font-[300] mt-2">Hãy điền thông tin cá nhân để chúng ta hiểu nhau hơn</p>
       </div>
 
       {isLoading === "pending" ? (
@@ -368,22 +317,12 @@ function Personal() {
           <div className="flex items-end justify-center">
             <LazyLoad>
               <>
-                <img
-                  src={`${avatar}`}
-                  alt="personal"
-                  className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover"
-                />
+                <img src={`${avatar}`} alt="personal" className="w-[70px] h-[70px] rounded-full mr-[5px] object-cover" />
               </>
             </LazyLoad>
 
             <label htmlFor="imageUpload" className="cursor-pointer">
-              <input
-                type="file"
-                id="imageUpload"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
+              <input type="file" id="imageUpload" accept="image/*" className="hidden" onChange={handleImageChange} />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -415,13 +354,9 @@ function Personal() {
             ))}
 
             <button
-              className={`${
-                isDirty || isChangeImage ? "hover:bg-green" : "opacity-50"
-              }  duration-200 w-full mt-5 font-semibold text-[20px] text-white rounded-lg h-[55px] shadow bg-[#008748]`}
+              className={`${isDirty || isChangeImage ? "hover:bg-green" : "opacity-50"}  duration-200 w-full mt-5 font-semibold text-[20px] text-white rounded-lg h-[55px] shadow bg-[#008748]`}
               type="submit"
-              disabled={
-                isDirty == false && isChangeImage === false ? true : false
-              }
+              disabled={isDirty == false && isChangeImage === false ? true : false}
             >
               {isSubmitting ? "Loading..." : "Lưu"}
             </button>

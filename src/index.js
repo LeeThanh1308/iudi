@@ -10,6 +10,7 @@ import { store } from "./service/redux/store";
 import FaviconNotification from "./components/FaviconNotification";
 import { ToastContainer } from "react-toastify";
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>

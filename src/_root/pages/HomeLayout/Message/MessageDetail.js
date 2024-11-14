@@ -17,6 +17,7 @@ import {
   postSeenMessage,
   handleGetHistoryMessage,
   fetchHistoryMessages,
+  handleChangeSeenMessages,
 } from "../../../../service/redux/messages/messagesSlice";
 
 import MessageDetailItem from "./MessageDetailItem";
@@ -25,10 +26,7 @@ import callPhone from "../../../../images/icons/callphone.png";
 import callVideo from "../../../../images/icons/callvideo.png";
 
 import { Auth } from "../../../../service/utils/auth";
-import {
-  handleErrorImg,
-  handleSendToastify,
-} from "../../../../service/utils/utils";
+import { handleErrorImg, handleSendToastify } from "../../../../service/utils/utils";
 
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
@@ -74,11 +72,8 @@ const MessageDetail = () => {
     socket.on("check_message", (message) => {
       const { ReceiverID, IsSeen, SenderID, Content } = message.data;
       let ID_ROOM = window.localStorage.getItem("ID_ROOM");
-      // console.table({ ReceiverID, IsSeen, SenderID, id, args });
       dispatch(fetchHistoryMessages(ReceiverID ?? IsSeen?.ReceiverID));
-      // handleSendToastify(Content);
       if (SenderID === Number(ID_ROOM)) {
-        // console.log()
         dispatch(
           fetchMessages({
             otherUserId: SenderID,
@@ -144,11 +139,7 @@ const MessageDetail = () => {
       await dispatch(postMessage(data));
       // dispatch(fetchHistoryMessages(userID));
       axios
-        .get(
-          `${API__SERVER}/pairmessage/${userID}?other_userId=${
-            data.idReceive
-          }&page=${1}&limit=${1}`
-        )
+        .get(`${API__SERVER}/pairmessage/${userID}?other_userId=${data.idReceive}&page=${1}&limit=${1}`)
         .then((response) => response.data)
         .then((data) => dispatch(handleUpdateDataMessage(data.data[0])))
         .then(() => {
@@ -196,9 +187,7 @@ const MessageDetail = () => {
       const { MessageID } = messages?.data[0];
       setIsLoading(true);
       await axios
-        .get(
-          `${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${nextPage}&limit=15`
-        )
+        .get(`${API__SERVER}/pairmessage/${userID}?other_userId=${id}&page=${nextPage}&limit=15`)
         .then((response) => response.data)
         .then((data) => {
           const dataMessage = data?.data;
@@ -212,9 +201,7 @@ const MessageDetail = () => {
         })
         .then(() => {
           setIsLoading(false);
-          const result = messRef.current.querySelector(
-            `div[data-mgs="${MessageID}-${id}"]`
-          );
+          const result = messRef.current.querySelector(`div[data-mgs="${MessageID}-${id}"]`);
           if (result) {
             result.scrollIntoView({ block: "end" });
             result.focus();
@@ -227,8 +214,28 @@ const MessageDetail = () => {
     }
   };
 
-  // console.log(dataSendMessage);
-  console.log(ref.current);
+  useEffect(() => {
+    const handleFocus = () => {
+      dispatch(
+        handleChangeSeenMessages({
+          SenderID: id,
+          ReceiverID: userID,
+        })
+      );
+      dispatch(fetchHistoryMessages(userID));
+    };
+
+    const inputRef = inputSendMessageRef.current;
+    if (inputRef) {
+      inputRef.addEventListener("focus", handleFocus);
+    }
+
+    return () => {
+      if (inputRef) {
+        inputRef.removeEventListener("focus", handleFocus);
+      }
+    };
+  }, []);
 
   return (
     <div className="pb-5 bg-white rounded-3xl h-full flex flex-col">
@@ -243,28 +250,17 @@ const MessageDetail = () => {
           <Link to={`/profile/${userName}`}>
             <LazyLoad>
               <>
-                <img
-                  className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover"
-                  src={`${avatar}`}
-                  alt="avatar default"
-                  onError={(e) => handleErrorImg(e.target)}
-                />
+                <img className="w-[66px] h-[66px] mobile:w-[50px] mobile:h-[50px] rounded-full object-cover" src={`${avatar}`} alt="avatar default" onError={(e) => handleErrorImg(e.target)} />
               </>
             </LazyLoad>
           </Link>
 
           <div className="flex flex-col justify-center text-black">
-            <h5 className="text-2xl font-bold capitalize mobile:text-lg mobile:fold-semibold">
-              {userName}
-            </h5>
+            <h5 className="text-2xl font-bold capitalize mobile:text-lg mobile:fold-semibold">{userName}</h5>
 
             <p className={isOnline ? `text-[#008748]` : "text-gray"}></p>
 
-            <p
-              className={`text-xs ${isOnline ? `text-[#008748]` : "text-gray"}`}
-            >
-              {isOnline ? "Đang hoạt động" : "Đang Offline"}
-            </p>
+            <p className={`text-xs ${isOnline ? `text-[#008748]` : "text-gray"}`}>{isOnline ? "Đang hoạt động" : "Đang Offline"}</p>
           </div>
         </div>
 
@@ -287,16 +283,9 @@ const MessageDetail = () => {
         </div> */}
       </div>
 
-      <div
-        className="flex-1 text-white p-[20px] overflow-hidden overflow-y-auto relative"
-        ref={messRef}
-      >
+      <div className="flex-1 text-white p-[20px] overflow-hidden overflow-y-auto relative" ref={messRef}>
         {!endHistory && messages.data.length > 0 ? (
-          <div
-            className={`absolute top-0 ] ${
-              isLoading ? "left-0 right-0 " : "right-0"
-            }`}
-          >
+          <div className={`absolute top-0 ] ${isLoading ? "left-0 right-0 " : "right-0"}`}>
             {!isLoading ? (
               <div
                 onClick={() => {
@@ -320,18 +309,8 @@ const MessageDetail = () => {
         {messages?.data?.length > 0
           ? messages?.data.map((data) => {
               if (data?.SenderID) {
-                const {
-                  SenderID,
-                  MessageID,
-                  Content,
-                  MessageTime,
-                  IsSeen,
-                  Image,
-                  imageLink: ImageBase64,
-                } = data;
-                SenderID === parseInt(id) &&
-                  IsSeen === 0 &&
-                  dispatch(postSeenMessage(MessageID));
+                const { SenderID, MessageID, Content, MessageTime, IsSeen, Image, imageLink: ImageBase64 } = data;
+                SenderID === parseInt(id) && IsSeen === 0 && dispatch(postSeenMessage(MessageID));
                 // console.log(index, messages.data.length);
                 return (
                   <MessageDetailItem
@@ -372,18 +351,12 @@ const MessageDetail = () => {
               </>
             </LazyLoad>
 
-            <button
-              className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm"
-              onClick={() => setImageUrl(null)}
-            >
+            <button className="absolute right-[-10px] top-[-10px] mobile:right-[-5px] mobile:top-[-5px] text-xl mobile:text-sm" onClick={() => setImageUrl(null)}>
               <IoIosCloseCircle />
             </button>
           </div>
         )}
-        <form
-          onSubmit={handleSubmitForm}
-          className="relative flex flex-col justify-between"
-        >
+        <form onSubmit={handleSubmitForm} className="relative flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <input
               className="flex flex-1 mr-5 mobile:mr-2 mobile:max-w-[70%] mobile:flex-0 focus-visible:outline-none bg-[white] text-black"
@@ -396,10 +369,7 @@ const MessageDetail = () => {
 
             <div className="ml-3 mobile:gap-1 mobile:ml-0 mobile:text-[xl] flex gap-3 items-center mobile:text-xl text-[32px] text-[#008748]">
               <div className="relative flex">
-                <button
-                  type="button"
-                  onClick={() => setShowEmoji((value) => !value)}
-                >
+                <button type="button" onClick={() => setShowEmoji((value) => !value)}>
                   <MdEmojiEmotions />
                 </button>
 
